@@ -1,0 +1,72 @@
+const Researcher = require("../models/researcher");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+exports.login = async (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  console.log(email, password);
+  let loadedUser;
+
+  await Researcher.findOne({ email: email })
+    .then((researcher) => {
+      if (!researcher) {
+        const error = new Error("user not found");
+        error.status = 401;
+        return error.message;
+      }
+      loadedUser = researcher;
+      // console.log(researcher)
+
+      return bcrypt.compare(password, loadedUser.pwd.toString());
+    })
+    .then((isEqual) => {
+      if (!isEqual) {
+        const error = new Error("Wrong password");
+        error.statuscode = 401;
+        return res.status(401).json(error);
+      }
+      const token = jwt.sign(
+        { email: loadedUser.email, userId: loadedUser.id.toString() },
+        "soybad",
+        {
+          expiresIn: "5d",
+        }
+      );
+      // res.json({message:"success"})
+
+      return res
+        .status(200)
+        .cookie("token", token, {
+          httpOnly: true,
+          maxAge: 60 * 60 * 1000, // 1 hour
+        })
+        .json({
+          token: token,
+          userId: loadedUser.id.toString(),
+          userName: loadedUser.firstname,
+          status: 200,
+        });
+    })
+    .catch((err) => {
+      return err;
+    });
+};
+
+exports.check = async (req, res, next) => {
+  const token = req.cookies.token;
+  console.log(req.cookies);
+  if (!token) {
+    return res.status(401).json("Unauthorized : No token provided");
+  }
+  try {
+    const decoded = jwt.verify(token, "soybad");
+    res.json({ isAuth: true });
+  } catch (err) {
+    return res.status(401).json("Unauthorized: Invalid token");
+  }
+};
+
+exports.logout = async (req,res,nect)=>{
+  res.clearCookie('token',{httpOnly:true})
+  res.json({message:'cookie cleared'})
+}
