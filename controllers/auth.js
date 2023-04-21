@@ -60,9 +60,10 @@ exports.check = async (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(token, "soybad");
-    res.json({ isAuth: true });
+    console.log(decoded)
+    res.status(200).json({ isAuth: true });
   } catch (err) {
-    return res.status(401).json("Unauthorized: Invalid token");
+    return res.status(401).json({message:"Unauthorized: Invalid token",isAuth:false});
   }
 };
 
