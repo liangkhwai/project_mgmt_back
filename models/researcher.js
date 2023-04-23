@@ -24,6 +24,10 @@ const Researcher = sequelize.define("researcher", {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  tel: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
   email: {
     type: Sequelize.STRING,
     allowNull: true,

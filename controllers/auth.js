@@ -4,15 +4,12 @@ const bcrypt = require("bcrypt");
 exports.login = async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  console.log(email, password);
   let loadedUser;
 
-  await Researcher.findOne({ email: email })
+  await Researcher.findOne({ where: { email: email } })
     .then((researcher) => {
       if (!researcher) {
-        const error = new Error("user not found");
-        error.status = 401;
-        return error.message;
+        return res.status(404).json("user not found");
       }
       loadedUser = researcher;
       // console.log(researcher)
@@ -54,20 +51,21 @@ exports.login = async (req, res, next) => {
 
 exports.check = async (req, res, next) => {
   const token = req.cookies.token;
-  console.log(req.cookies);
   if (!token) {
     return res.status(401).json("Unauthorized : No token provided");
   }
   try {
     const decoded = jwt.verify(token, "soybad");
-    console.log(decoded)
+    console.log(decoded);
     res.status(200).json({ isAuth: true });
   } catch (err) {
-    return res.status(401).json({message:"Unauthorized: Invalid token",isAuth:false});
+    return res
+      .status(401)
+      .json({ message: "Unauthorized: Invalid token", isAuth: false });
   }
 };
 
-exports.logout = async (req,res,nect)=>{
-  res.clearCookie('token',{httpOnly:true})
-  res.json({message:'cookie cleared'})
-}
+exports.logout = async (req, res, nect) => {
+  res.clearCookie("token", { httpOnly: true });
+  res.json({ message: "cookie cleared" });
+};
