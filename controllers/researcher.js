@@ -64,18 +64,36 @@ exports.inSert = async (req, res, next) => {
     const tel = req.body.tel;
     const grade = req.body.grade;
 
-    const researcher = await Researcher.create(
-      {
-        student_id: student_id,
-        firstname: firstname,
-        lastname: lastname,
-        email: email,
-        tel: tel,
-        grade: grade,
-      }
-    );
+    const researcher = await Researcher.create({
+      student_id: student_id,
+      firstname: firstname,
+      lastname: lastname,
+      email: email,
+      tel: tel,
+      grade: grade,
+    });
     console.log("success");
-    return res.status(200).json(researcher);
+    return res.status(201).json({id:researcher.id});
+  } catch {
+    return res.status(401);
+  }
+};
+
+exports.deLete = async (req, res, next) => {
+  console.log('delete')
+  try {
+    const token = req.cookies.token;
+    console.log(token);
+    const check = await checkToken(token);
+    if (!check) {
+      res.status(401).json("invalid token or unavalible token");
+    }
+    const id = req.body.id;
+    console.log(id)
+    const researcher = await Researcher.findOne({ where: { id: id } });
+    researcher.destroy();
+    console.log('delete success')
+    return res.status(200);
   } catch {
     return res.status(401);
   }

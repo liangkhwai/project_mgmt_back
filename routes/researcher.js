@@ -11,4 +11,7 @@ router.put("/update",researcherController.upDate)
 router.post('/insert',researcherController.inSert)
 
 
+router.post('/delete',researcherController.deLete)
+
+
 module.exports = router;
