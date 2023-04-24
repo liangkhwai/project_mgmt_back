@@ -8,4 +8,7 @@ router.get("/list", researcherController.getList);
 router.put("/update",researcherController.upDate)
 
 
+router.post('/insert',researcherController.inSert)
+
+
 module.exports = router;
