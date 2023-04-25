@@ -2,11 +2,11 @@ const Researcher = require("../models/researcher");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 exports.login = async (req, res, next) => {
-  const email = req.body.email;
+  const id = req.body.id;
   const password = req.body.password;
   let loadedUser;
 
-  await Researcher.findOne({ where: { email: email } })
+  await Researcher.findOne({ where: { student_id: id } })
     .then((researcher) => {
       if (!researcher) {
         return res.status(404).json("user not found");

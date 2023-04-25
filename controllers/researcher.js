@@ -1,5 +1,6 @@
 const Researcher = require("../models/researcher");
 const checkToken = require("../utils/checkToken");
+const bcrypt = require("bcrypt");
 exports.getList = async (req, res, next) => {
   try {
     const researcher = await Researcher.findAll();
@@ -64,23 +65,33 @@ exports.inSert = async (req, res, next) => {
     const tel = req.body.tel;
     const grade = req.body.grade;
 
-    const researcher = await Researcher.create({
-      student_id: student_id,
-      firstname: firstname,
-      lastname: lastname,
-      email: email,
-      tel: tel,
-      grade: grade,
+    Researcher.findOne({ where: { student_id: student_id } }).then(async (user) => {
+      if (user) {
+        return res.status(401).json("User already exits");
+      } else {
+        const pwd = bcrypt.hashSync(student_id, 10);
+        console.log(pwd);
+        const researcher = await Researcher.create({
+          student_id: student_id,
+          firstname: firstname,
+          lastname: lastname,
+          email: email,
+          pwd: pwd,
+          tel: tel,
+          grade: grade,
+        });
+        console.log("success");
+        console.log("after insert id = ", researcher);
+        return res.status(201).json({ id: researcher.id });
+      }
     });
-    console.log("success");
-    return res.status(201).json({id:researcher.id});
   } catch {
     return res.status(401);
   }
 };
 
 exports.deLete = async (req, res, next) => {
-  console.log('delete')
+  console.log("delete");
   try {
     const token = req.cookies.token;
     console.log(token);
@@ -89,10 +100,10 @@ exports.deLete = async (req, res, next) => {
       res.status(401).json("invalid token or unavalible token");
     }
     const id = req.body.id;
-    console.log(id)
+    console.log(id);
     const researcher = await Researcher.findOne({ where: { id: id } });
     researcher.destroy();
-    console.log('delete success')
+    console.log("delete success");
     return res.status(200);
   } catch {
     return res.status(401);
