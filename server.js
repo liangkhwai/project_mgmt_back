@@ -12,11 +12,12 @@ const exam_requests = require("./models/exam_requests");
 const researcherRoutes = require("./routes/researcher");
 const authRoutes = require("./routes/auth");
 const sequelize = require("./db");
-const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const app = express();
 
 app.use(express.json());
+
 app.use(
   cors({
     credentials: true,
