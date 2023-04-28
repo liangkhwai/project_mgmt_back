@@ -106,8 +106,17 @@ exports.inSertXlsx = async (req, res, next) => {
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     console.log("work sheet = ", worksheet);
     data = xlsx.utils.sheet_to_json(worksheet);
-    console.log(data);
-    res.status(200).json(data);
+
+    for (const rsh of data) {
+      await Researcher.create({
+        student_id: rsh.STUDENT_NO,
+        firstname: rsh.NAME,
+        lastname: rsh.LNAME,
+        pwd: bcrypt.hashSync(rsh.STUDENT_NO, 10),
+      });
+    }
+
+    res.status(200).json("insert Successful");
   } catch {
     res.status(501).json("ERR");
   }
