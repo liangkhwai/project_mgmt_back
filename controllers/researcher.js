@@ -106,17 +106,18 @@ exports.inSertXlsx = async (req, res, next) => {
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     console.log("work sheet = ", worksheet);
     data = xlsx.utils.sheet_to_json(worksheet);
-
+    let stdList = [];
     for (const rsh of data) {
-      await Researcher.create({
+      let std = await Researcher.create({
         student_id: rsh.STUDENT_NO,
         firstname: rsh.NAME,
         lastname: rsh.LNAME,
         pwd: bcrypt.hashSync(rsh.STUDENT_NO, 10),
       });
+      stdList.push(std);
     }
 
-    res.status(200).json("insert Successful");
+    res.status(200).json({ message: "Insert Success", data: stdList });
   } catch {
     res.status(501).json("ERR");
   }
@@ -134,9 +135,9 @@ exports.deLete = async (req, res, next) => {
     const id = req.body.id;
     console.log(id);
     const researcher = await Researcher.findOne({ where: { id: id } });
-    researcher.destroy();
+    await researcher.destroy();
     console.log("delete success");
-    return res.status(200);
+    return res.status(200).json("delete success");
   } catch {
     return res.status(401);
   }

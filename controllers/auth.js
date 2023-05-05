@@ -7,14 +7,14 @@ exports.login = async (req, res, next) => {
   let loadedUser;
 
   await Researcher.findOne({ where: { student_id: id } })
-    .then((researcher) => {
+    .then(async (researcher) => {
       if (!researcher) {
         return res.status(404).json("user not found");
       }
       loadedUser = researcher;
       // console.log(researcher)
 
-      return bcrypt.compare(password, loadedUser.pwd.toString());
+      return await bcrypt.compare(password, loadedUser.pwd.toString());
     })
     .then((isEqual) => {
       if (!isEqual) {

@@ -9,6 +9,8 @@ const thesis_files = require("./models/thesis_files");
 const exam_requests_files = require("./models/exam_requests_files");
 const announcements = require("./models/exam_announcements");
 const exam_requests = require("./models/exam_requests");
+const categorie_room = require("./models/categorie_room");
+require("./models/associations");
 const researcherRoutes = require("./routes/researcher");
 const authRoutes = require("./routes/auth");
 const sequelize = require("./db");
@@ -41,6 +43,7 @@ app.use((req, res, next) => {
 
 app.use("/researcher", researcherRoutes);
 app.use("/auth", authRoutes);
+
 sequelize
   .sync()
   .then((result) => {
