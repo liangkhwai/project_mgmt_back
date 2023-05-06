@@ -1,11 +1,12 @@
 const Researcher = require("../models/researcher");
 const checkToken = require("../utils/checkToken");
+const categories = require('../models/categorie_room')
 const bcrypt = require("bcrypt");
 const xlsx = require("xlsx");
 const multer = require("multer");
 exports.getList = async (req, res, next) => {
   try {
-    const researcher = await Researcher.findAll();
+    const researcher = await Researcher.findAll({ include: categories});
     // console.log(researcher);
 
     res.status(200).json(researcher);
