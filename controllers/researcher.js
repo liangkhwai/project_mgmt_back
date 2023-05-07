@@ -29,6 +29,7 @@ exports.upDate = async (req, res, next) => {
     const student_id = req.body.student_id;
     const firstname = req.body.firstname;
     const lastname = req.body.lastname;
+    const categorieRoomId = req.body.categorieRoomId;
     const email = req.body.email;
     const tel = req.body.tel;
     const grade = req.body.grade;
@@ -39,13 +40,18 @@ exports.upDate = async (req, res, next) => {
         firstname: firstname,
         lastname: lastname,
         email: email,
+        categorieRoomId: parseInt(categorieRoomId),
         tel: tel,
         grade: grade,
       },
-      { where: { id: id } }
+      { where: { id: id }}
     );
+    const withRef = await Researcher.findOne({
+      where: { id: id },
+      include: categories,
+    });
     console.log("success");
-    return res.status(200).json(researcher);
+    return res.status(200).json(withRef);
   } catch {
     return res.status(401);
   }
