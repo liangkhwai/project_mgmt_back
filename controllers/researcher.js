@@ -1,12 +1,12 @@
 const Researcher = require("../models/researcher");
 const checkToken = require("../utils/checkToken");
-const categories = require('../models/categorie_room')
+const categories = require("../models/categorie_room");
 const bcrypt = require("bcrypt");
 const xlsx = require("xlsx");
 const multer = require("multer");
 exports.getList = async (req, res, next) => {
   try {
-    const researcher = await Researcher.findAll({ include: categories});
+    const researcher = await Researcher.findAll({ include: categories });
     // console.log(researcher);
 
     res.status(200).json(researcher);
@@ -98,26 +98,35 @@ exports.inSert = async (req, res, next) => {
 exports.inSertXlsx = async (req, res, next) => {
   try {
     console.log("xlsx");
-    // console.log(req.file);
+    console.log("yo ", req.body.selector);
+    const selector = req.body.selector;
     const file = await req.file;
-    console.log("file = ", file);
+    // console.log("file = ", file);
     const workbook = await xlsx.readFile(file.path);
-    console.log("workbook = ", workbook);
-    console.log(workbook.SheetNames[0]);
+    // console.log("workbook = ", workbook);
+    // console.log(workbook.SheetNames[0]);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    console.log("work sheet = ", worksheet);
+    // console.log("work sheet = ", worksheet);
     data = xlsx.utils.sheet_to_json(worksheet);
     let stdList = [];
+
     for (const rsh of data) {
       let std = await Researcher.create({
         student_id: rsh.STUDENT_NO,
         firstname: rsh.NAME,
         lastname: rsh.LNAME,
         pwd: bcrypt.hashSync(rsh.STUDENT_NO, 10),
+        categorieRoomId: parseInt(selector),
       });
-      stdList.push(std);
-    }
 
+      let withRef = await Researcher.findOne({
+        where: { id: std.id },
+        include: categories,
+      });
+
+      stdList.push(withRef);
+    }
+    // console.log(stdList);
     res.status(200).json({ message: "Insert Success", data: stdList });
   } catch {
     res.status(501).json("ERR");
