@@ -44,7 +44,7 @@ exports.upDate = async (req, res, next) => {
         tel: tel,
         grade: grade,
       },
-      { where: { id: id }}
+      { where: { id: id } }
     );
     const withRef = await Researcher.findOne({
       where: { id: id },
@@ -70,6 +70,7 @@ exports.inSert = async (req, res, next) => {
     const student_id = req.body.student_id;
     const firstname = req.body.firstname;
     const lastname = req.body.lastname;
+    const categorieRoomId = req.body.categorieRoomId;
     const email = req.body.email;
     const tel = req.body.tel;
     const grade = req.body.grade;
@@ -86,13 +87,18 @@ exports.inSert = async (req, res, next) => {
             firstname: firstname,
             lastname: lastname,
             email: email,
+            categorieRoomId: categorieRoomId,
             pwd: pwd,
             tel: tel,
             grade: grade,
           });
-          console.log("success");
-          console.log("after insert id = ", researcher);
-          return res.status(201).json({ id: researcher.id });
+          const withRef = await Researcher.findOne({
+            where: { id: researcher.id },
+            include: categories,
+          });
+          // console.log("success");
+          // console.log("after insert id = ", researcher);
+          return res.status(201).json(withRef);
         }
       }
     );

@@ -5,4 +5,6 @@ const router = express.Router();
 
 router.get("/list", categoriesController.getList);
 
+router.put("/update",categoriesController.upDate)
+
 module.exports = router;
