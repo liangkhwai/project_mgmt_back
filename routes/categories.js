@@ -7,4 +7,6 @@ router.get("/list", categoriesController.getList);
 
 router.put("/update",categoriesController.upDate)
 
+router.post("/insert", categoriesController.inSert)
+
 module.exports = router;

@@ -12,17 +12,17 @@ exports.getList = async (req, res, next) => {
 
 exports.upDate = async (req, res, next) => {
   try {
-    console.log('hello update')
+    console.log("hello update");
     const token = req.cookies.token;
     console.log(token);
     const check = await checkToken(token);
     if (!check) {
       res.status(401).json("invalid token or unavalible token");
     }
-    console.log(check)
+    console.log(check);
     console.log(req.body);
     const id = req.body.id;
-    console.log(typeof id)
+    console.log(typeof id);
     const room = req.body.room;
     const type = req.body.type;
     const year = req.body.year;
@@ -35,7 +35,7 @@ exports.upDate = async (req, res, next) => {
       },
       { where: { id: id } }
     );
-    console.log('update success')
+    console.log("update success");
     const withRef = await Categories.findOne({
       where: { id: id },
     });
@@ -43,5 +43,34 @@ exports.upDate = async (req, res, next) => {
     return res.status(200).json(withRef);
   } catch {
     return res.status(401);
+  }
+};
+
+exports.inSert = async (req, res, next) => {
+  try {
+    console.log('hi')
+    const token = req.cookies.token;
+    const check = await checkToken(token);
+    if (!check) {
+      res.status(401).json("invalid token or unavalible token");
+    }
+    console.log("pass check");
+    console.log(req.body)
+    const room = req.body.room;
+    const type = req.body.type;
+    const year = req.body.year;
+
+    const Categorie = await Categories.create({
+      room: room,
+      type: type,
+      year: year,
+    });
+
+    const data = await Categories.findOne({ where: { id: Categorie.id } });
+
+    return res.status(201).json(data);
+  } catch {
+    console.log('err')
+    return res.status(501).json("Error to created");
   }
 };
