@@ -9,4 +9,7 @@ router.put("/update",categoriesController.upDate)
 
 router.post("/insert", categoriesController.inSert)
 
+router.post("/delete", categoriesController.deLete)
+
+
 module.exports = router;

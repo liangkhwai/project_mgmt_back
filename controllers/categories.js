@@ -48,14 +48,14 @@ exports.upDate = async (req, res, next) => {
 
 exports.inSert = async (req, res, next) => {
   try {
-    console.log('hi')
+    console.log("hi");
     const token = req.cookies.token;
     const check = await checkToken(token);
     if (!check) {
       res.status(401).json("invalid token or unavalible token");
     }
     console.log("pass check");
-    console.log(req.body)
+    console.log(req.body);
     const room = req.body.room;
     const type = req.body.type;
     const year = req.body.year;
@@ -70,7 +70,25 @@ exports.inSert = async (req, res, next) => {
 
     return res.status(201).json(data);
   } catch {
-    console.log('err')
+    console.log("err");
     return res.status(501).json("Error to created");
+  }
+};
+
+exports.deLete = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    const check = await checkToken(token);
+    if (!check) {
+      res.status(401).json("invalid token or unavalible token");
+    }
+
+    const id = req.body.id;
+
+    const data = await Categories.destroy({ where: { id: id } });
+
+    return res.status(200).json(id);
+  } catch {
+    return res.status(501).json("err");
   }
 };
