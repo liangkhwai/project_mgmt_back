@@ -13,6 +13,7 @@ const categorie_room = require("./models/categorie_room");
 require("./models/associations");
 const researcherRoutes = require("./routes/researcher");
 const categoriesRoutes = require("./routes/categories");
+const teacherRoutes = require("./routes/teacher");
 const authRoutes = require("./routes/auth");
 const sequelize = require("./db");
 const cors = require("cors");
@@ -45,7 +46,7 @@ app.use((req, res, next) => {
 app.use("/researcher", researcherRoutes);
 app.use("/auth", authRoutes);
 app.use("/categories", categoriesRoutes);
-
+app.use("/teachers", teacherRoutes);
 sequelize
   .sync()
   .then((result) => {
