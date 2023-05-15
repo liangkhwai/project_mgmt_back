@@ -67,3 +67,42 @@ exports.deLete = async (req, res, next) => {
     return res.status(500).json("err");
   }
 };
+
+exports.upDate = async (req, res, next) => {
+  console.log("hi");
+  try {
+    const token = req.cookies.token;
+    console.log(token);
+    const check = await checkToken(token);
+    if (!check) {
+      res.status(401).json("invalid token or unavalible token");
+    }
+    console.log(req.body);
+    const id = req.body.id;
+    const prefix = req.body.prefix;
+    const firstname = req.body.firstname;
+    const lastname = req.body.lastname;
+    const email = req.body.email;
+    const tel = req.body.tel;
+    const line_id = req.body.line_id;
+
+    const teacher = await Teachers.update(
+      {
+        prefix: prefix,
+        firstname: firstname,
+        lastname: lastname,
+        email: email,
+        tel: tel,
+        line_id: line_id,
+      },
+      { where: { id: id } }
+    );
+    const withRef = await Teachers.findOne({
+      where: { id: id },
+    });
+    console.log("success");
+    return res.status(200).json(withRef);
+  } catch {
+    return res.status(401);
+  }
+};
