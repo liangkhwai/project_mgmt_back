@@ -9,6 +9,6 @@ router.get("/list", teacherController.getList);
 
 router.post("/insert", teacherController.inSert);
 
-// router.post("/delete", teacherController.deLete);
+router.post("/delete", teacherController.deLete);
 
 module.exports = router;

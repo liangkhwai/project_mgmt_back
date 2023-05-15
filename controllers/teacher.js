@@ -49,3 +49,21 @@ exports.inSert = async (req, res, next) => {
     res.status(501).json("err");
   }
 };
+
+exports.deLete = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    const check = await checkToken(token);
+    if (!check) {
+      res.status(401).json("invalid token or unavalible token");
+    }
+    const id = req.body.id;
+    console.log(id);
+    const teacher = await Teachers.findOne({ where: { id: id } });
+    await teacher.destroy();
+    console.log("delete success");
+    return res.status(200).json("delete success");
+  } catch {
+    return res.status(500).json("err");
+  }
+};
