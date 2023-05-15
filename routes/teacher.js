@@ -7,7 +7,7 @@ router.get("/list", teacherController.getList);
 
 // router.put("/update", teacherController.upDate);
 
-// router.post("/insert", teacherController.inSert);
+router.post("/insert", teacherController.inSert);
 
 // router.post("/delete", teacherController.deLete);
 
