@@ -16,6 +16,7 @@ exports.login = async (req, res, next) => {
       // console.log(researcher)
 
       return await bcrypt.compare(password, loadedUser.pwd.toString());
+      // return true;
     })
     .then((isEqual) => {
       if (!isEqual) {
@@ -27,7 +28,6 @@ exports.login = async (req, res, next) => {
         {
           email: loadedUser.email,
           userId: loadedUser.id.toString(),
-          
         },
         "soybad",
         {
@@ -114,7 +114,6 @@ exports.loginTch = async (req, res, next) => {
       return err;
     });
 };
-
 exports.check = async (req, res, next) => {
   const token = req.cookies.token;
   if (!token) {

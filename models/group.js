@@ -11,11 +11,11 @@ const Group = sequelize.define("group", {
   },
   title: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   status: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 });
 
