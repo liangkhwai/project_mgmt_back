@@ -4,6 +4,59 @@ const categories = require("../models/categorie_room");
 const bcrypt = require("bcrypt");
 const xlsx = require("xlsx");
 const multer = require("multer");
+const jwt = require("jsonwebtoken");
+
+exports.getOne = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    console.log(token);
+    const check = await checkToken(token);
+    if (!check) {
+      res.status(401).json("invalid token or unavalible token");
+    }
+
+    const decoded = jwt.verify(token, "soybad");
+    const userId = decoded.userId;
+    const researcher = await Researcher.findOne({
+      where: { id: parseInt(userId) },
+      include: categories,
+    });
+
+    return res.status(200).json({ userData: researcher });
+  } catch (err) {
+    return res.status(501).json({ message: err });
+  }
+};
+
+exports.getGroupList = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    console.log(token);
+    const check = await checkToken(token);
+    if (!check) {
+      res.status(401).json("invalid token or unavalible token");
+    }
+
+    const decoded = jwt.verify(token, "soybad");
+    const userId = decoded.userId;
+    const researcher = await Researcher.findOne({
+      where: { id: parseInt(userId) },
+    });
+
+    const groupList = await Researcher.findAll({
+      where: { groupId: researcher.groupId },
+    });
+
+    // const researcher = await Researcher.findAll({
+    //   where: { groupId: parseInt(gId) },
+    // });
+    return res.status(200).json({ groupList: groupList });
+  } catch (err) {
+    console.log(err);
+    res.status(501).json({ message: err });
+  }
+};
+
 exports.getList = async (req, res, next) => {
   try {
     const researcher = await Researcher.findAll({ include: categories });

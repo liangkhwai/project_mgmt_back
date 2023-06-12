@@ -1,4 +1,5 @@
 const Researcher = require("../models/researcher");
+const Categories = require("../models/categorie_room");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Teacher = require("../models/teacher");
@@ -28,6 +29,7 @@ exports.login = async (req, res, next) => {
         {
           email: loadedUser.email,
           userId: loadedUser.id.toString(),
+          role: "researcher",
         },
         "soybad",
         {
@@ -35,7 +37,7 @@ exports.login = async (req, res, next) => {
         }
       );
       // res.json({message:"success"})
-
+      console.log(loadedUser);
       return res
         .status(200)
         .cookie("token", token, {
@@ -47,6 +49,7 @@ exports.login = async (req, res, next) => {
           userId: loadedUser.id.toString(),
           userName: loadedUser.firstname,
           status: 200,
+          userData: loadedUser,
           role: "researcher",
         });
     })
@@ -116,17 +119,34 @@ exports.loginTch = async (req, res, next) => {
 };
 exports.check = async (req, res, next) => {
   const token = req.cookies.token;
+  console.log(token);
   if (!token) {
     return res.status(401).json("Unauthorized : No token provided");
   }
   try {
     const decoded = jwt.verify(token, "soybad");
-    console.log(decoded);
-    res.status(200).json({ isAuth: true });
-  } catch (err) {
+    const userId = decoded.userId;
+    const userRole = decoded.role;
+    console.log("userRole : ", userRole);
+    let userData;
+    userData = await Researcher.findOne({
+      where: { id: parseInt(userId) },
+      include: Categories,
+    });
+    if (userRole === "teacher") {
+      userData = await Teacher.findOne({
+        where: { id: parseInt(userId) },
+      });
+    }
+    // console.log(userData);
     return res
-      .status(401)
-      .json({ message: "Unauthorized: Invalid token", isAuth: false });
+      .status(200)
+      .json({ isAuth: true, userData: userData, userRole: userRole });
+  } catch (err) {
+    return res.status(401).json({
+      message: "Unauthorized: Invalid token : " + err,
+      isAuth: false,
+    });
   }
 };
 

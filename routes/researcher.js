@@ -17,4 +17,6 @@ router.post(
 
 router.post("/delete", researcherController.deLete);
 
+router.get("/getOne", researcherController.getOne);
+router.get("/getGroupList", researcherController.getGroupList);
 module.exports = router;
