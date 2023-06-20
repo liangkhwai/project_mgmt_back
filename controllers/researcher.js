@@ -12,7 +12,7 @@ exports.getOne = async (req, res, next) => {
     console.log(token);
     const check = await checkToken(token);
     if (!check) {
-      res.status(401).json("invalid token or unavalible token");
+      return res.status(401).json("invalid token or unavalible token");
     }
 
     const decoded = jwt.verify(token, "soybad");
@@ -21,9 +21,10 @@ exports.getOne = async (req, res, next) => {
       where: { id: parseInt(userId) },
       include: categories,
     });
-
-    return res.status(200).json({ userData: researcher });
+    console.log(researcher);
+    return res.status(200).json(researcher);
   } catch (err) {
+    console.log("Error is : ", err);
     return res.status(501).json({ message: err });
   }
 };
