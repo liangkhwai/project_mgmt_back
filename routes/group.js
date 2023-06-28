@@ -9,5 +9,5 @@ router.get("/getGroup", groupController.getGroup)
 
 router.post("/createTitleGroup", groupController.createTitleGroup)
 
-
+router.get("/getAllGroup",groupController.getAllGroup)
 module.exports = router;

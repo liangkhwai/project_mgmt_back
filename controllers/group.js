@@ -47,6 +47,22 @@ exports.getGroup = async (req, res, next) => {
   }
 };
 
+exports.getAllGroup = async(req,res,next)=>{
+  try{
+    const token = req.cookies.token;
+    const check = await checkToken(token)
+    if(!check) return res.status(401).json("invalid token or unavalible token")
+
+    const allGroup = await Group.findAll()
+
+    return res.status(200).json(allGroup)
+
+  }catch(err){
+    return res.status(501).json(err)
+  }
+}
+
+
 exports.createTitleGroup = async (req, res, next) => {
   try {
     const token = req.cookies.token;
