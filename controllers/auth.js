@@ -1,5 +1,6 @@
 const Researcher = require("../models/researcher");
 const Categories = require("../models/categorie_room");
+const Admin = require("../models/admin");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Teacher = require("../models/teacher");
@@ -69,7 +70,49 @@ exports.loginTch = async (req, res, next) => {
     .then(async (teacher) => {
       if (!teacher) {
         console.log("not found");
-        return res.status(404).json("user not found");
+        // return res.status(404).json("user not found");
+
+        await Admin.findOne({ where: { email: email } })
+          .then(async (admin) => {
+            if (!admin) {
+              return res.status(404).json("User not found");
+            }
+
+            loadedAdmin = admin;
+
+            return await bcrypt.compare(password, loadedAdmin.pwd);
+          })
+          .then((isEqual) => {
+            if (!isEqual) {
+              const err = new Error("Wrong password");
+              err.statuscode = 401;
+              return res.status(401).json(err);
+            }
+            const token = jwt.sign(
+              {
+                email: loadedAdmin.email,
+                userId: loadedAdmin.id.toString(),
+                role: "admin",
+              },
+              "soybad",
+              {
+                expiresIn: "5d",
+              }
+            );
+            return res
+              .status(200)
+              .cookie("token", token, {
+                httpOnly: true,
+                maxAge: 60 * 60 * 1000, // 1 hour
+              })
+              .json({
+                token: token,
+                userId: loadedAdmin.id.toString(),
+                userName: loadedAdmin.username,
+                status: 200,
+                role: "admin",
+              });
+          });
       }
       loadedUser = teacher;
       // console.log(researcher)

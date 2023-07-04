@@ -10,6 +10,7 @@ const exam_requests_files = require("./models/exam_requests_files");
 const announcements = require("./models/exam_announcements");
 const exam_requests = require("./models/exam_requests");
 const categorie_room = require("./models/categorie_room");
+const admin = require("./models/admin");
 require("./models/associations");
 const researcherRoutes = require("./routes/researcher");
 const categoriesRoutes = require("./routes/categories");
@@ -50,7 +51,7 @@ app.use("/categories", categoriesRoutes);
 app.use("/teachers", teacherRoutes);
 app.use("/group", groupRoutes);
 sequelize
-  .sync({})
+  .sync({  })
   .then((result) => {
     app.listen(8080);
   })
