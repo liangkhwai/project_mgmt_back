@@ -59,7 +59,7 @@ exports.login = async (req, res, next) => {
     });
 };
 
-exports.loginTch = async (req, res, next) => {
+exports.loginTch = async (req, res, next) => {  
   console.log("tchLogged");
   const email = req.body.email;
   const password = req.body.pwd;
@@ -172,15 +172,33 @@ exports.check = async (req, res, next) => {
     const userRole = decoded.role;
     console.log("userRole : ", userRole);
     let userData;
-    userData = await Researcher.findOne({
-      where: { id: parseInt(userId) },
-      include: Categories,
-    });
-    if (userRole === "teacher") {
+
+    if (userRole === "researcher") {
+      userDta = await Researcher.findOne({
+        where: { id: parseInt(userId) },
+        include: Categories,
+      });
+    } else if (userRole === "teacher") {
       userData = await Teacher.findOne({
         where: { id: parseInt(userId) },
       });
+    } else if (userRole === "admin") {
+      userData = await Admin.findOne({
+        where: { id: parseInt(userId) },
+      });
+    } else {
+      return res.status(501).json("No role for account");
     }
+
+    // userData = await Researcher.findOne({
+    //   where: { id: parseInt(userId) },
+    //   include: Categories,
+    // });
+    // if (userRole === "teacher") {
+    //   userData = await Teacher.findOne({
+    //     where: { id: parseInt(userId) },
+    //   });
+    // }
     // console.log(userData);
     return res
       .status(200)
