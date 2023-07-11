@@ -1,3 +1,4 @@
+const Categorie_room = require("../models/categorie_room.js");
 const Group = require("../models/group.js");
 const Researcher = require("../models/researcher.js");
 const checkToken = require("../utils/checkToken");
@@ -47,21 +48,38 @@ exports.getGroup = async (req, res, next) => {
   }
 };
 
-exports.getAllGroup = async(req,res,next)=>{
-  try{
+exports.getOneGroup = async (req, res, next) => {
+  try {
     const token = req.cookies.token;
-    const check = await checkToken(token)
-    if(!check) return res.status(401).json("invalid token or unavalible token")
-
-    const allGroup = await Group.findAll()
-
-    return res.status(200).json(allGroup)
-
-  }catch(err){
-    return res.status(501).json(err)
+    const check = await checkToken(token);
+    if (!check)
+      return res.status(401).json("invaldi token or unavalible token");
+    console.log("Group id :", req.body);
+    const groupId = req.body.grpId;
+    const group = await Group.findOne({ where: { id: parseInt(groupId) } });
+    if (!group) {
+      console.log("HIIIIIIIIIIIIIIIIIIIIIIIII");
+    }
+    return res.status(200).json(group);
+  } catch (err) {
+    return res.status(501).json(err);
   }
-}
+};
 
+exports.getAllGroup = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    const check = await checkToken(token);
+    if (!check)
+      return res.status(401).json("invalid token or unavalible token");
+
+    const allGroup = await Group.findAll();
+
+    return res.status(200).json(allGroup);
+  } catch (err) {
+    return res.status(501).json(err);
+  }
+};
 
 exports.createTitleGroup = async (req, res, next) => {
   try {
@@ -88,5 +106,105 @@ exports.createTitleGroup = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     return res.status(501).json(err);
+  }
+};
+
+exports.changeGroupTitle = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    const check = await checkToken(token);
+    if (!check) {
+      return res.status(401).json("invalid token or unavalible token");
+    }
+
+    const grpId = req.body.groupId;
+    const title = req.body.title;
+    console.log(req.body);
+    console.log(grpId);
+    console.log(title);
+    const group = await Group.update(
+      {
+        title: title,
+      },
+      { where: { id: parseInt(grpId) } }
+    );
+
+    return res.status(200).json("success");
+  } catch (err) {
+    return res.status(501).json(err);
+  }
+};
+
+exports.removeResearcherFromGroup = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    const check = await checkToken(token);
+    if (!check) {
+      return res.status(401).json("invalid token or unavalible token");
+    }
+
+    const userId = req.body.userId;
+    console.log(userId);
+    const researcher = await Researcher.update(
+      {
+        groupId: null,
+      },
+      { where: { id: parseInt(userId) } }
+    );
+    console.log(researcher);
+
+    const researcherInfo = await Researcher.findOne({
+      where: { id: parseInt(userId) },
+    });
+
+    return res.status(200).json(researcherInfo);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+};
+
+exports.getGroupMember = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    const check = await checkToken(token);
+    if (!check) {
+      return res.status(401).json("invalid token or unavalible token");
+    }
+
+    const grpId = req.body.grpId;
+    console.log(grpId);
+
+    const researcher = await Researcher.findAll({
+      where: { groupId: parseInt(grpId) },
+      include: Categorie_room,
+    });
+    console.log(researcher);
+
+    return res.status(200).json(researcher);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+};
+
+exports.addGroupMember = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    const check = await checkToken(token);
+    if (!check) {
+      return res.status(401).json("invalid token or unavalible token");
+    }
+    const userId = req.body.userId;
+    const grpId = req.body.grpId;
+    console.log(userId,grpId);
+    const researcher = await Researcher.update(
+      {
+        groupId: grpId,
+      },
+      { where: { id: parseInt(userId) } }
+    );
+
+    return res.status(200).json("success");
+  } catch (err) {
+    return res.status(500).json(err);
   }
 };

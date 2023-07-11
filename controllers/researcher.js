@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const xlsx = require("xlsx");
 const multer = require("multer");
 const jwt = require("jsonwebtoken");
+const Admin = require("../models/admin");
 
 exports.getOne = async (req, res, next) => {
   try {
@@ -17,11 +18,18 @@ exports.getOne = async (req, res, next) => {
 
     const decoded = jwt.verify(token, "soybad");
     const userId = decoded.userId;
+    const role = decoded.role;
+    console.log("Role :", role);
+    if (role === "admin" || role === "teacher") {
+      return res.status(401).json(null);
+      // const admin = Admin.findOne({where:{id:parseInt(userId)}})
+      // return res.status(200).json(admin)
+    }
     const researcher = await Researcher.findOne({
       where: { id: parseInt(userId) },
       include: categories,
     });
-    console.log(researcher);
+    // console.log(researcher);
     return res.status(200).json(researcher);
   } catch (err) {
     console.log("Error is : ", err);
@@ -40,12 +48,21 @@ exports.getGroupList = async (req, res, next) => {
 
     const decoded = jwt.verify(token, "soybad");
     const userId = decoded.userId;
+    const role = decoded.role;
+    console.log("userID : ", userId);
+    if (role === "admin" && role === "teacher")
+      return res.status(401).json(null);
     const researcher = await Researcher.findOne({
       where: { id: parseInt(userId) },
     });
 
-    const groupList = await Researcher.findAll({
+    if (researcher.groupId === null) {
+      return res.status(401).json("null");
+    }
+
+    let groupList = await Researcher.findAll({
       where: { groupId: researcher.groupId },
+      include: categories,
     });
 
     // const researcher = await Researcher.findAll({
