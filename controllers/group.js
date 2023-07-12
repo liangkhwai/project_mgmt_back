@@ -195,7 +195,7 @@ exports.addGroupMember = async (req, res, next) => {
     }
     const userId = req.body.userId;
     const grpId = req.body.grpId;
-    console.log(userId,grpId);
+    console.log(userId, grpId);
     const researcher = await Researcher.update(
       {
         groupId: grpId,
@@ -206,5 +206,32 @@ exports.addGroupMember = async (req, res, next) => {
     return res.status(200).json("success");
   } catch (err) {
     return res.status(500).json(err);
+  }
+};
+
+exports.removeGroup = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    const check = await checkToken(token);
+    if (!check) {
+      return res.status(401).json("invalid token or unavalible token");
+    }
+    const grpId = req.body.grpId;
+
+    // const group = await Group.findOne({
+    //   where: { id: parseInt(grpId) },
+    // });
+
+    try {
+      const groupDes = await Group.destroy({ where: { id: parseInt(grpId) } });
+      return res.status(200).json(parseInt(grpId));
+    } catch (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ error: "Failed to delete the group. It is referenced by other records." });
+    }
+    
+    // return res.status(200).json(parseInt(grpId));
+  } catch (err) {
+    return res.status(501).json();
   }
 };

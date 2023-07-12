@@ -18,5 +18,5 @@ router.put("/removeFromGroup",groupController.removeResearcherFromGroup)
 
 router.put('/changeGroupTitle',groupController.changeGroupTitle)
 router.put('/addGroupMember',groupController.addGroupMember)
-
+router.post('/removeGroup',groupController.removeGroup)
 module.exports = router;
