@@ -1,8 +1,12 @@
+const Board = require("../models/board.js");
 const Categorie_room = require("../models/categorie_room.js");
 const Group = require("../models/group.js");
 const Researcher = require("../models/researcher.js");
 const checkToken = require("../utils/checkToken");
 const jwt = require("jsonwebtoken");
+const { Op } = require("sequelize");
+const sequelize = require("../db.js");
+// const { Op } = require('sequelize/lib/operators');
 
 exports.create = async (req, res, next) => {
   const token = req.cookies.token;
@@ -195,7 +199,8 @@ exports.addGroupMember = async (req, res, next) => {
     }
     const userId = req.body.userId;
     const grpId = req.body.grpId;
-    console.log(userId, grpId);
+    console.log("hio");
+    console.log("key body for add group", userId, grpId);
     const researcher = await Researcher.update(
       {
         groupId: grpId,
@@ -227,11 +232,33 @@ exports.removeGroup = async (req, res, next) => {
       return res.status(200).json(parseInt(grpId));
     } catch (err) {
       console.error("Database error:", err);
-      return res.status(500).json({ error: "Failed to delete the group. It is referenced by other records." });
+      return res.status(500).json({
+        error: "Failed to delete the group. It is referenced by other records.",
+      });
     }
-    
+
     // return res.status(200).json(parseInt(grpId));
   } catch (err) {
     return res.status(501).json();
+  }
+};
+
+exports.getAllGroupNoRandom = async (req, res, next) => {
+  try {
+    try {
+      const sql = "SELECT * FROM `groups` AS `group` WHERE `group`.`id` NOT IN (SELECT groupId FROM boards);";
+      const group = await sequelize.query(sql);
+      console.log(group.length);
+      console.log(group[0]);
+      return res.status(200).json(group[0]);
+    } catch (err) {
+      console.log(err);
+    }
+
+    console.log(group);
+
+    return res.status(200).json(group);
+  } catch (err) {
+    return res.status(500).json(err);
   }
 };

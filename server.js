@@ -17,6 +17,7 @@ const categoriesRoutes = require("./routes/categories");
 const teacherRoutes = require("./routes/teacher");
 const authRoutes = require("./routes/auth");
 const groupRoutes = require("./routes/group");
+const boardRoutes = require("./routes/boards")
 const sequelize = require("./db");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -82,6 +83,7 @@ app.use("/researcher", researcherRoutes);
 app.use("/auth", authRoutes);
 app.use("/categories", categoriesRoutes);
 app.use("/teachers", teacherRoutes);
+app.use("/boards",boardRoutes )
 app.use("/group", groupRoutes);
 sequelize
   .sync({})
