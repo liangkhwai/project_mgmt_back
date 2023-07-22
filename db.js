@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const sequelize = new Sequelize("project_mgmt", "root", "123456789", {
   host: "localhost",
   dialect: "mysql",
+  timezone:"+07:00",
   logging: console.log,
 });
 try {
