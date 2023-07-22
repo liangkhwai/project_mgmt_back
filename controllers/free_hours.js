@@ -61,6 +61,7 @@ exports.addHours = async (req, res, next) => {
     }
 
     const resDta = {
+      id: parseInt(free_hours.id),
       start: startTime,
       end: endTime,
       title: free_hours.title,
@@ -73,7 +74,12 @@ exports.addHours = async (req, res, next) => {
     return res.status(500).json(err);
   }
 };
-
+function isBool(val) {
+  if (val == 1) {
+    return true;
+  }
+  return false;
+}
 exports.getEventListTch = async (req, res, next) => {
   try {
     const tchId = req.body.tchId;
@@ -82,25 +88,21 @@ exports.getEventListTch = async (req, res, next) => {
       where: { teacherId: parseInt(tchId) },
     });
     const resArr = [];
-    function isBool(val) {
-      if (val == 1) {
-        return true;
-      }
-      return false;
-    }
+
     for (const freeHours of free_hours) {
       const startTime = dayjs(freeHours.start_time)
         .utc()
         .add(7, "hours")
         .locale("th")
-        .format("YYYY-MM-DD HH:mm:ss")
+        .format("YYYY-MM-DD HH:mm:ss");
       const endTime = dayjs(freeHours.end_time)
         .utc()
         .add(7, "hours")
         .locale("th")
-        .format("YYYY-MM-DD HH:mm:ss")
+        .format("YYYY-MM-DD HH:mm:ss");
 
       let data = {
+        id: parseInt(freeHours.id),
         start: dayjs(startTime).$d,
         end: dayjs(endTime).$d,
         title: freeHours.title,
@@ -109,9 +111,60 @@ exports.getEventListTch = async (req, res, next) => {
       resArr.push(data);
     }
 
-   
-
     return res.status(200).json(resArr);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.updateEvent = async (req, res, next) => {
+  try {
+    console.log(req.body);
+    const eventId = req.body.event.id;
+    const title = req.body.event.title;
+    const start = req.body.event.start;
+    const end = req.body.event.end;
+    const allDay = req.body.event.allDay;
+    const free_hours = await FreeHours.update(
+      {
+        title: title,
+        allDay: allDay,
+        start_time: start,
+        end_time: end,
+      },
+      { where: { id: parseInt(eventId) } }
+    );
+
+    const data = await FreeHours.findOne({
+      where: { id: parseInt(eventId) },
+    });
+    const update_free_hour = {
+      id: parseInt(data.id),
+      start: dayjs(data.start_time).$d,
+      end: dayjs(data.end_time).$d,
+      title: data.title,
+      allDay: isBool(data.allDay),
+    };
+
+    return res.status(203).json(update_free_hour);
+  } catch (err) {
+    console.log(err);
+
+    return res.status(500).json(err);
+  }
+};
+
+exports.deleteEvent = async (req, res, next) => {
+  try {
+    console.log(req.body);
+    const eventId = req.body.id;
+
+    const free_hours = await FreeHours.findOne({
+      where: { id: parseInt(eventId) },
+    });
+    free_hours.destroy();
+    return res.status(200).json(parseInt(eventId));
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
