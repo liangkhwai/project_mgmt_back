@@ -4,6 +4,8 @@ const sequelize = new Sequelize("project_mgmt", "root", "123456789", {
   dialect: "mysql",
   timezone:"+07:00",
   logging: console.log,
+  charset: 'utf8mb4',
+  collate: 'utf8mb4_unicode_ci', 
 });
 try {
   sequelize.authenticate();

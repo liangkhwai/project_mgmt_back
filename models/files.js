@@ -1,8 +1,7 @@
 const Sequelize = require("sequelize");
-
 const sequelize = require("../db");
 
-const Exam_requests_files = sequelize.define("exam_requests_files", {
+const Files = sequelize.define("files", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -12,6 +11,8 @@ const Exam_requests_files = sequelize.define("exam_requests_files", {
   originalname: {
     type: Sequelize.STRING,
     allowNull: true,
+    charset: 'utf8mb4',
+    collate: 'utf8mb4_unicode_ci'
   },
   filename:{
     type:Sequelize.STRING,
@@ -24,4 +25,4 @@ const Exam_requests_files = sequelize.define("exam_requests_files", {
   },
 });
 
-module.exports = Exam_requests_files;
+module.exports = Files;
