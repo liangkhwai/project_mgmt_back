@@ -29,6 +29,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const fs = require("fs");
 const Files = require("./models/files");
+const Exam_requests_files = require("./models/exam_requests_files");
 const app = express();
 const upload = multer();
 const corsOptions = {
@@ -76,6 +77,39 @@ app.get("/files/upload/:slug", async (req, res) => {
   
     if (fs.existsSync(pdfFilePath)) {
       // Read the file data and send it as a response
+      const pdfData = fs.readFileSync(pdfFilePath);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `inline; filename*=UTF-8''${encodeURIComponent(file.originalname)}`
+      );
+      res.send(pdfData);
+    } else {
+      res.status(404).send("File not found.");
+    }
+  }catch(er){
+    console.log(er);
+    return res.status(500).json(er)
+  }
+  
+});
+
+app.get("/files/request/:slug", async (req, res) => {
+  const { slug } = req.params;
+  console.log(slug);
+  try{
+    const file = await Exam_requests_files.findOne({ where: { originalname: slug } });
+    const sanitizedSlug = sanitizeFilename(file.originalname)
+    const pdfFilePath = path.join(
+      __dirname,
+      "upload",
+      "files",
+      "requestExam",
+      `${file.filename ? file.filename : ""}`
+    );
+    console.log(pdfFilePath);
+  
+    if (fs.existsSync(pdfFilePath)) {
       const pdfData = fs.readFileSync(pdfFilePath);
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(

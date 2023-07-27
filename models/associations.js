@@ -7,7 +7,9 @@ const Exam_announcements = require("./exam_announcements");
 const Exam_requests_files = require("./exam_requests_files");
 const Exam_requests = require("./exam_requests");
 const Free_hours = require('./free_hours')
-const Categorie_room = require('./categorie_room')
+const Categorie_room = require('./categorie_room');
+const Exam_booking = require("./exam_booking");
+const Exam_result = require("./exam_result");
 // one to many
 Group.hasMany(Researcher, { onDelete: "NO ACTION" });
 Researcher.belongsTo(Group);
@@ -26,6 +28,13 @@ Free_hours.belongsTo(Teacher);
 
 Categorie_room.hasMany(Researcher, { onDelete: "NO ACTION" });
 Researcher.belongsTo(Categorie_room);
+
+Exam_requests.hasMany(Exam_booking, {onDelete:"NO ACTION"})
+Exam_booking.belongsTo(Exam_requests)
+
+Exam_requests.hasMany(Exam_result, {onDelete:"NO ACTION"})
+Exam_result.belongsTo(Exam_requests)
+
 
 // Many to Many
 
