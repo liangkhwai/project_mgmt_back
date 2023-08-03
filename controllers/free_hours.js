@@ -6,6 +6,7 @@ const FreeHours = require("../models/free_hours");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
+const Free_hours = require("../models/free_hours");
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.tz.setDefault("Asia/Bangkok");
@@ -19,56 +20,73 @@ exports.addHours = async (req, res, next) => {
 
     console.log(req.body);
     const title = req.body.date.title;
-    const start = dayjs(req.body.date.start)
+    let start = dayjs(req.body.date.start)
       .utc()
       .add(7, "hours")
       .locale("th")
       .format("YYYY-MM-DD HH:mm:ss");
-    const end = dayjs(req.body.date.end)
+    let end = dayjs(req.body.date.end)
       .utc()
       .add(7, "hours")
       .locale("th")
       .format("YYYY-MM-DD HH:mm:ss");
     // console.log(start,end);
+    if (start > end) {
+      let startTmp = start;
+      start = end;
+      end = startTmp;
+    }
+
     const allDay = req.body.date.allDay;
     const tchId = req.body.tchId;
 
-    const free_hours = await FreeHours.create({
+    const free_hours_create = await FreeHours.create({
       title: title,
       start_time: start,
       end_time: end,
       allDay: allDay,
       teacherId: parseInt(tchId),
     });
-    const startTime = dayjs(free_hours.start_time)
-      .utc()
-      .add(7, "hours")
-      .locale("th")
-      .format("YYYY-MM-DD HH:mm:ss");
-    const endTime = dayjs(free_hours.end_time)
-      .utc()
-      .add(7, "hours")
-      .locale("th")
-      .format("YYYY-MM-DD HH:mm:ss");
-    free_hours.setDataValue("start_time", startTime);
-    free_hours.setDataValue("end_time", endTime);
 
-    function isBool(val) {
-      if (val == 1) {
-        return true;
-      }
-      return false;
-    }
+    console.log("data that create: ", free_hours_create);
+    const free_hours = await FreeHours.findOne(
+      { where: { id: parseInt(free_hours_create.id) } ,
+       include: [Teacher] },
+    );
 
-    const resDta = {
-      id: parseInt(free_hours.id),
-      start: startTime,
-      end: endTime,
-      title: free_hours.title,
-      allDay: isBool(free_hours.allDay),
-    };
+    // console.log("data free_hours create", free_hours);
+    // console.log(free_hours.start_time);
+    // console.log(free_hours.end_time);
+    // const startTime = dayjs(free_hours.start_time)
+    //   .utc()
+    //   .add(7, "hours")
+    //   .locale("th")
+    //   .format("YYYY-MM-DD HH:mm:ss");
+    // const endTime = dayjs(free_hours.end_time)
+    //   .utc()
+    //   .add(7, "hours")
+    //   .locale("th")
+    //   .format("YYYY-MM-DD HH:mm:ss");
+    // free_hours.setDataValue("start_time", startTime);
+    // free_hours.setDataValue("end_time", endTime);
 
-    return res.status(200).json(resDta);
+    // function isBool(val) {
+    //   if (val == 1) {
+    //     return true;
+    //   }
+    //   return false;
+    // }
+
+    // const resDta = {
+    //   id: parseInt(free_hours.id),
+    //   start: startTime,
+    //   end: endTime,
+    //   title: free_hours.title,
+    //   allDay: isBool(free_hours.allDay),
+    //   teacher: free_hours.teacher,
+    // };
+    console.log(free_hours);
+    return res.status(200).json(free_hours);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
@@ -135,19 +153,51 @@ exports.updateEvent = async (req, res, next) => {
       },
       { where: { id: parseInt(eventId) } }
     );
-
-    const data = await FreeHours.findOne({
-      where: { id: parseInt(eventId) },
+    console.log("data update id : ", eventId);
+    const data = await FreeHours.findAll({
+      // where: { id: parseInt(eventId) },
+      include: Teacher,
     });
-    const update_free_hour = {
-      id: parseInt(data.id),
-      start: dayjs(data.start_time).$d,
-      end: dayjs(data.end_time).$d,
-      title: data.title,
-      allDay: isBool(data.allDay),
-    };
+    const eventsList = [];
 
-    return res.status(203).json(update_free_hour);
+    // for (const event of data) {
+    //   const startTime = dayjs(event.start_time)
+    //     .utc()
+    //     .add(7, "hours")
+    //     .locale("th")
+    //     .format("YYYY-MM-DD HH:mm:ss");
+    //   const endTime = dayjs(event.end_time)
+    //     .utc()
+    //     .add(7, "hours")
+    //     .locale("th")
+    //     .format("YYYY-MM-DD HH:mm:ss");
+
+    //   let data = {
+    //     id: parseInt(event.id),
+    //     start: dayjs(startTime).$d,
+    //     end: dayjs(endTime).$d,
+    //     title: event.title,
+    //     allDay: isBool(event.allDay),
+    //     teacher: event.teacher,
+    //   };
+    //   eventsList.push(data);
+    // }
+    const getFreeUpdate = await FreeHours.findOne({
+      where: { id: parseInt(eventId) },
+      include: [Teacher],
+    });
+    console.log("db : ", getFreeUpdate);
+    // console.log("DATA FROM DB ",data);
+    // const update_free_hour = {
+    //   id: parseInt(data.id),
+    //   start: dayjs(data.start_time).$d,
+    //   end: dayjs(data.end_time).$d,
+    //   title: data.title,
+    //   allDay: isBool(data.allDay),
+    //   teacher:data.teacher
+    // };
+    // console.log(update_free_hour);
+    return res.status(203).json(getFreeUpdate);
   } catch (err) {
     console.log(err);
 
@@ -165,6 +215,40 @@ exports.deleteEvent = async (req, res, next) => {
     });
     free_hours.destroy();
     return res.status(200).json(parseInt(eventId));
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.getAllEvents = async (req, res, next) => {
+  try {
+    const events = await FreeHours.findAll({ include: Teacher });
+    const eventsList = [];
+
+    for (const event of events) {
+      const startTime = dayjs(event.start_time)
+        .utc()
+        .add(7, "hours")
+        .locale("th")
+        .format("YYYY-MM-DD HH:mm:ss");
+      const endTime = dayjs(event.end_time)
+        .utc()
+        .add(7, "hours")
+        .locale("th")
+        .format("YYYY-MM-DD HH:mm:ss");
+
+      let data = {
+        id: parseInt(event.id),
+        start: dayjs(startTime).$d,
+        end: dayjs(endTime).$d,
+        title: event.title,
+        allDay: isBool(event.allDay),
+        teacher: event.teacher,
+      };
+      eventsList.push(data);
+    }
+    return res.status(200).json(eventsList);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);

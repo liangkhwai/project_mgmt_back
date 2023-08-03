@@ -58,14 +58,14 @@ app.patch("/cors", (req, res) => {
 
 app.use(express.static(path.join(__dirname, "public")));
 const sanitizeFilename = (filename) => {
-  return filename.replace(/[^a-zA-Z0-9_.-]/g, '');
+  return filename.replace(/[^a-zA-Z0-9_.-]/g, "");
 };
 app.get("/files/upload/:slug", async (req, res) => {
   const { slug } = req.params;
   console.log(slug);
-  try{
+  try {
     const file = await Files.findOne({ where: { originalname: slug } });
-    const sanitizedSlug = sanitizeFilename(file.originalname)
+    const sanitizedSlug = sanitizeFilename(file.originalname);
     const pdfFilePath = path.join(
       __dirname,
       "upload",
@@ -74,7 +74,7 @@ app.get("/files/upload/:slug", async (req, res) => {
       `${file.filename ? file.filename : ""}`
     );
     console.log(pdfFilePath);
-  
+
     if (fs.existsSync(pdfFilePath)) {
       // Read the file data and send it as a response
       const pdfData = fs.readFileSync(pdfFilePath);
@@ -87,19 +87,20 @@ app.get("/files/upload/:slug", async (req, res) => {
     } else {
       res.status(404).send("File not found.");
     }
-  }catch(er){
+  } catch (er) {
     console.log(er);
-    return res.status(500).json(er)
+    return res.status(500).json(er);
   }
-  
 });
 
 app.get("/files/request/:slug", async (req, res) => {
   const { slug } = req.params;
   console.log(slug);
-  try{
-    const file = await Exam_requests_files.findOne({ where: { originalname: slug } });
-    const sanitizedSlug = sanitizeFilename(file.originalname)
+  try {
+    const file = await Exam_requests_files.findOne({
+      where: { originalname: slug },
+    });
+    const sanitizedSlug = sanitizeFilename(file.originalname);
     const pdfFilePath = path.join(
       __dirname,
       "upload",
@@ -108,7 +109,7 @@ app.get("/files/request/:slug", async (req, res) => {
       `${file.filename ? file.filename : ""}`
     );
     console.log(pdfFilePath);
-  
+
     if (fs.existsSync(pdfFilePath)) {
       const pdfData = fs.readFileSync(pdfFilePath);
       res.setHeader("Content-Type", "application/pdf");
@@ -120,11 +121,10 @@ app.get("/files/request/:slug", async (req, res) => {
     } else {
       res.status(404).send("File not found.");
     }
-  }catch(er){
+  } catch (er) {
     console.log(er);
-    return res.status(500).json(er)
+    return res.status(500).json(er);
   }
-  
 });
 
 app.use("/researcher", researcherRoutes);

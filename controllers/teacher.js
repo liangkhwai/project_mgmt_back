@@ -1,7 +1,7 @@
 const Teachers = require("../models/teacher");
 
 const checkToken = require("../utils/checkToken");
-
+const bcrypt = require('bcrypt')
 exports.getList = async (req, res, next) => {
   try {
     const token = req.cookies.token;
@@ -34,12 +34,14 @@ exports.inSert = async (req, res, next) => {
     const tel = req.body.tel;
     const line_id = req.body.line_id;
 
+    const pwd = bcrypt.hashSync(tel, 10);
     const new_teacher = await Teachers.create({
       prefix: prefix,
       firstname: firstname,
       lastname: lastname,
       email: email,
       tel: tel,
+      pwd:pwd,
       line_id: line_id,
     });
 
