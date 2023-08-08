@@ -10,4 +10,6 @@ router.post('/getRequest',requestExamController.getRequest)
 
 router.post('/setStatus',requestExamController.setStatus)
 
+router.get("/getRequestGroup/:grpId",requestExamController.getRequestGroup)
+
 module.exports = router;

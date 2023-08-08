@@ -44,46 +44,104 @@ exports.request = async (req, res, next) => {
     return res.status(500).json(err);
   }
 };
-
 exports.getRequest = async (req, res, next) => {
   try {
     const token = req.cookies.token;
     const check = await checkToken(token);
     if (!check) {
-      res.status(401).json("invalid token or unavalible token");
+      return res.status(401).json("invalid token or unavailable token");
     }
 
-    console.log(req.body);
     const tchId = parseInt(req.body.tchId);
-    try {
-      const sql = `SELECT exam_requests.*,\`groups\`.title FROM exam_requests 
+    const sql = `
+      SELECT exam_requests.*, \`groups\`.title 
+      FROM exam_requests 
       INNER JOIN \`groups\` ON exam_requests.groupId = \`groups\`.id 
       INNER JOIN boards ON \`groups\`.id = boards.groupId 
       INNER JOIN teachers ON boards.teacherId = teachers.id 
-      WHERE boards.role = 'advisor' AND teachers.id = ${tchId};
+      WHERE boards.role = 'advisor' AND teachers.id = :tchId;
     `;
-      const getRequest = await sequelize.query(sql);
-      console.log(getRequest[0]);
-      let resRequest = []
-      for (const request of getRequest[0]) {
-        console.log(request);
-        const files = await Exam_requests_files.findAll({
-          where: { examRequestId: parseInt(request.id) },
-        });
-        const dummy = { ...request, files };
-        console.log(dummy);
-        console.log(request);
-        resRequest.push(dummy)
-      }
 
-      return res.status(200).json(resRequest);
-    } catch (er) {
-      console.log(er);
-      return res.status(500).json(er);
+    try {
+      const getRequest = await sequelize.query(sql, {
+        replacements: { tchId },
+        type: sequelize.QueryTypes.SELECT,
+      });
+
+      const requestsWithFiles = await Promise.all(getRequest.map(async (request) => {
+        const files = await Exam_requests_files.findAll({
+          where: { examRequestId: request.id },
+        });
+        return { ...request, files };
+      }));
+
+      return res.status(200).json(requestsWithFiles);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json(error);
     }
-  } catch (er) {
-    console.log(er);
-    return res.status(500).json(er);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+};
+
+// NOT OPTIMIZE 
+// exports.getRequest = async (req, res, next) => {
+//   try {
+//     const token = req.cookies.token;
+//     const check = await checkToken(token);
+//     if (!check) {
+//       res.status(401).json("invalid token or unavalible token");
+//     }
+
+//     console.log(req.body);
+//     const tchId = parseInt(req.body.tchId);
+//     try {
+//       const sql = `SELECT exam_requests.*,\`groups\`.title FROM exam_requests 
+//       INNER JOIN \`groups\` ON exam_requests.groupId = \`groups\`.id 
+//       INNER JOIN boards ON \`groups\`.id = boards.groupId 
+//       INNER JOIN teachers ON boards.teacherId = teachers.id 
+//       WHERE boards.role = 'advisor' AND teachers.id = ${tchId};
+//     `;
+//       const getRequest = await sequelize.query(sql);
+//       console.log(getRequest[0]);
+//       let resRequest = [];
+//       for (const request of getRequest[0]) {
+//         console.log(request);
+//         const files = await Exam_requests_files.findAll({
+//           where: { examRequestId: parseInt(request.id) },
+//         });
+//         const dummy = { ...request, files };
+//         console.log(dummy);
+//         console.log(request);
+//         resRequest.push(dummy);
+//       }
+
+//       return res.status(200).json(resRequest);
+//     } catch (er) {
+//       console.log(er);
+//       return res.status(500).json(er);
+//     }
+//   } catch (er) {
+//     console.log(er);
+//     return res.status(500).json(er);
+//   }
+// };
+
+exports.getRequestGroup = async (req, res, next) => {
+  try {
+    const grpId = req.params.grpId;
+
+    const requestList = await Exam_requests.findAll({
+      where: { groupId: parseInt(grpId) },
+    });
+
+    console.log(requestList);
+    return res.status(200).json(requestList);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
   }
 };
 
@@ -94,7 +152,6 @@ exports.setStatus = async (req, res, next) => {
     if (!check) {
       res.status(401).json("invalid token or unavalible token");
     }
-    console.log(req.body);
     const isApprove = req.body.isApprove;
     const exam_request_id = req.body.id;
     const categories = req.body.categories;
@@ -110,8 +167,22 @@ exports.setStatus = async (req, res, next) => {
       },
       { where: { id: parseInt(exam_request_id) } }
     );
-    console.log(exam_request);
-    return res.status(200).json(exam_request);
+
+    const requestExam = await Exam_requests.findOne({
+      where: { id: parseInt(exam_request_id) },
+    });
+    const files = await Exam_requests_files.findAll({
+      where: { examRequestId: parseInt(exam_request_id) },
+    });
+    let exam_update = { ...requestExam.dataValues, files };
+    const grpFind = await Group.findOne({
+      where: { id: parseInt(requestExam.groupId) },
+      attributes: ["title"],
+    });
+    console.log(grpFind);
+    exam_update = {...exam_update,...grpFind.dataValues}
+    console.log(exam_update);
+    return res.status(200).json(exam_update);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);

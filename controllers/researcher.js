@@ -37,41 +37,56 @@ exports.getOne = async (req, res, next) => {
   }
 };
 
+// exports.getGroupList = async (req, res, next) => {
+//   try {
+//     const token = req.cookies.token;
+//     console.log(token);
+//     const check = await checkToken(token);
+//     if (!check) {
+//       res.status(401).json("invalid token or unavalible token");
+//     }
+//     const decoded = jwt.verify(token, "soybad");
+//     const userId = decoded.userId;
+//     const role = decoded.role;
+//     console.log("userID : ", userId);
+//     if (role === "admin" && role === "teacher")
+//       return res.status(401).json(null);
+//     const researcher = await Researcher.findOne({
+//       where: { id: parseInt(userId) },
+//     });
+
+//     if (researcher.groupId === null) {
+//       return res.status(401).json("null");
+//     }
+
+//     let groupList = await Researcher.findAll({
+//       where: { groupId: researcher.groupId },
+//       include: categories,
+//     });
+
+//     // const researcher = await Researcher.findAll({
+//     //   where: { groupId: parseInt(gId) },
+//     // });
+//     return res.status(200).json({ groupList: groupList });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(501).json({ message: err });
+//   }
+// };
+
 exports.getGroupList = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
-    console.log(token);
-    const check = await checkToken(token);
-    if (!check) {
-      res.status(401).json("invalid token or unavalible token");
-    }
-
-    const decoded = jwt.verify(token, "soybad");
-    const userId = decoded.userId;
-    const role = decoded.role;
-    console.log("userID : ", userId);
-    if (role === "admin" && role === "teacher")
-      return res.status(401).json(null);
-    const researcher = await Researcher.findOne({
-      where: { id: parseInt(userId) },
-    });
-
-    if (researcher.groupId === null) {
-      return res.status(401).json("null");
-    }
-
-    let groupList = await Researcher.findAll({
-      where: { groupId: researcher.groupId },
+    const grpId = req.params.grpId;
+    console.log(grpId);
+    const groupMember = await Researcher.findAll({
+      where: { groupId: parseInt(grpId) },
       include: categories,
     });
-
-    // const researcher = await Researcher.findAll({
-    //   where: { groupId: parseInt(gId) },
-    // });
-    return res.status(200).json({ groupList: groupList });
+    console.log(groupMember);
+    return res.status(200).json(groupMember)
   } catch (err) {
     console.log(err);
-    res.status(501).json({ message: err });
+    return res.status(500).json(err);
   }
 };
 
@@ -127,6 +142,7 @@ exports.upDate = async (req, res, next) => {
     return res.status(401);
   }
 };
+
 
 exports.inSert = async (req, res, next) => {
   console.log("hi");
