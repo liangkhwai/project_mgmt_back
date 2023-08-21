@@ -20,6 +20,15 @@ const Researcher = sequelize.define("researcher", {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  grade_project: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  isEditGradeProject:{
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+    
+  },
   student_id: {
     type: Sequelize.STRING,
     allowNull: true,

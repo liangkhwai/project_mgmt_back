@@ -6,6 +6,9 @@ const xlsx = require("xlsx");
 const multer = require("multer");
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/admin");
+const sequelize = require("../db");
+const Categorie_room = require("../models/categorie_room");
+const Group = require("../models/group");
 
 exports.getOne = async (req, res, next) => {
   try {
@@ -83,7 +86,7 @@ exports.getGroupList = async (req, res, next) => {
       include: categories,
     });
     console.log(groupMember);
-    return res.status(200).json(groupMember)
+    return res.status(200).json(groupMember);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
@@ -92,10 +95,22 @@ exports.getGroupList = async (req, res, next) => {
 
 exports.getList = async (req, res, next) => {
   try {
-    const researcher = await Researcher.findAll({ include: categories });
-    // console.log(researcher);
-
-    res.status(200).json(researcher);
+    // const researcher = await Researcher.findAll({ include: categories });
+    // // console.log(researcher);
+    // const sql = `SELECT *
+    // FROM researchers
+    // LEFT JOIN categorie_rooms ON researchers.id = categorie_rooms.id
+    // LEFT JOIN \`groups\` ON researchers.groupId = \`groups\`.id;
+    // `
+    // const researcher = await sequelize.query(sql)
+    const researcher = await Researcher.findAll({
+      include: [
+        { model: Categorie_room, required: false },
+        { model: Group, required: false },
+      ],
+    });
+    console.log(researcher);
+    return res.status(200).json(researcher);
   } catch {
     return res.status(401);
   }
@@ -142,7 +157,6 @@ exports.upDate = async (req, res, next) => {
     return res.status(401);
   }
 };
-
 
 exports.inSert = async (req, res, next) => {
   console.log("hi");
@@ -249,5 +263,24 @@ exports.deLete = async (req, res, next) => {
     return res.status(200).json("delete success");
   } catch {
     return res.status(401);
+  }
+};
+
+exports.updateGradeProject = async (req, res, next) => {
+  try {
+    const gradeProject = req.body.gradeProject;
+    const rshId = req.body.rshId;
+    const researcher = await Researcher.update(
+      {
+        grade_project: gradeProject,
+        isEditGradeProject: true,
+      },
+      { where: { id: parseInt(rshId) } }
+    );
+
+    return res.status(200).json("success");
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
   }
 };

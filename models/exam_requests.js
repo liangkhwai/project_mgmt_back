@@ -26,18 +26,7 @@ const Exam_requests = sequelize.define("exam_requests", {
     type: Sequelize.STRING,
     allowNull:true
   },
-  start_time: {
-    type: Sequelize.DATE,
-    allowNull:true
-  },
-  end_time: {
-    type: Sequelize.DATE,
-    allowNull:true
-  },
-  feedback: {
-    type: Sequelize.STRING,
-    allowNull:true
-  },
+ 
 });
 
 module.exports = Exam_requests;

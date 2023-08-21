@@ -50,6 +50,7 @@ exports.login = async (req, res, next) => {
           userId: loadedUser.id.toString(),
           userName: loadedUser.firstname,
           status: 200,
+          grpId:loadedUser.groupId,
           userData: loadedUser,
           role: "researcher",
         });
@@ -119,22 +120,36 @@ exports.loginTch = async (req, res, next) => {
       console.log(loadedUser);
       console.log(typeof password, typeof loadedUser.pwd);
       console.log(password, loadedUser.pwd);
-
-      return await bcrypt.compare(password, loadedUser.pwd);
+      const pwdCompare = await bcrypt.compare(password,loadedUser.pwd)
+      return {pwdCompare,teacher}
       // return true
     })
     .then((isEqual) => {
+      console.log('in');
       console.log(isEqual);
-      if (!isEqual) {
+      console.log('out');
+      if (!isEqual.pwdCompare) {
         const error = new Error("Wrong password");
         error.statuscode = 401;
         return res.status(401).json(error);
       }
+      console.log(isEqual.teacher.dataValues.isAdmin);
+
+      console.log('pass compare');
+      let isAdmin = false
+
+      if(isEqual.teacher.dataValues.isAdmin === true){
+        isAdmin = true
+      }
+      // console.log(isEqual.teacher.teacher.dataValues);
+
+      console.log(isAdmin);
+      console.log('pass admin check');
       const token = jwt.sign(
         {
           email: loadedUser.email,
           userId: loadedUser.id.toString(),
-          role: "teacher",
+          role: isAdmin ? "admin" : "teacher",
         },
         "soybad",
         {
@@ -152,8 +167,9 @@ exports.loginTch = async (req, res, next) => {
           token: token,
           userId: loadedUser.id.toString(),
           userName: loadedUser.firstname,
+          
           status: 200,
-          role: "teacher",
+          role: isAdmin ? "admin" : "teacher",
         });
     })
     .catch((err) => {

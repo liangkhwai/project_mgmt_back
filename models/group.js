@@ -15,7 +15,8 @@ const Group = sequelize.define("group", {
   },
   status: {
     type: Sequelize.STRING,
-    allowNull: true,
+    // allowNull: true,
+    defaultValue: "ยังไม่ยื่นสอบหัวข้อ"
   },
 });
 

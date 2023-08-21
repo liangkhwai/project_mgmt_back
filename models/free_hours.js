@@ -13,10 +13,6 @@ const Free_hours = sequelize.define("free_hours", {
     type: Sequelize.STRING,
     allowNull: true,
   },
-  allDay: {
-    type: Sequelize.BOOLEAN,
-    allowNull:true,
-  },
 
   start_time: {
     type: Sequelize.DATE,

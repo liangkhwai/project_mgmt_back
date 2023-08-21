@@ -9,10 +9,10 @@ const Exam_announcements = sequelize.define("exam_announcements", {
     allowNull: false,
     primaryKey: true,
   },
-  start_time: {
+  start: {
     type: Sequelize.DATE,
   },
-  end_time: {
+  end: {
     type: Sequelize.DATE,
   },
   categories: {

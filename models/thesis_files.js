@@ -9,7 +9,15 @@ const Thesis_files = sequelize.define("thesis_files", {
     allowNull: false,
     primaryKey: true,
   },
-  files_path:Sequelize.STRING
+  originalname:{
+    type:Sequelize.STRING,
+  },
+  filename:{
+    type : Sequelize.STRING
+  },
+  path:{
+    type:Sequelize.STRING
+  }
 });
 
 module.exports = Thesis_files;

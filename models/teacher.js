@@ -29,6 +29,10 @@ const Teacher = sequelize.define("teacher", {
   line_id: {
     type: Sequelize.STRING,
   },
+  isAdmin :{
+    type:Sequelize.BOOLEAN,
+    defaultValue:false
+  }
 });
 
 module.exports = Teacher;

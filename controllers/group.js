@@ -15,7 +15,10 @@ exports.create = async (req, res, next) => {
     res.status(401).json("invalid token or unavalible token");
   }
   const group_list = req.body.group_list;
-  const group = await Group.create();
+  const decodeToken = jwt.verify(token, "soybad");
+  const group = await Group.create({
+    leaderId:parseInt(decodeToken.userId)
+  });
 
   for (let std of group_list) {
     console.log(std);
