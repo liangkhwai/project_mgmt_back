@@ -17,7 +17,7 @@ exports.create = async (req, res, next) => {
   const group_list = req.body.group_list;
   const decodeToken = jwt.verify(token, "soybad");
   const group = await Group.create({
-    leaderId:parseInt(decodeToken.userId)
+    leaderId: parseInt(decodeToken.userId),
   });
 
   for (let std of group_list) {
@@ -249,7 +249,8 @@ exports.removeGroup = async (req, res, next) => {
 exports.getAllGroupNoRandom = async (req, res, next) => {
   try {
     try {
-      const sql = "SELECT * FROM `groups` AS `group` WHERE `group`.`id` NOT IN (SELECT groupId FROM boards);";
+      const sql =
+        "SELECT * FROM `groups` AS `group` WHERE `group`.`id` NOT IN (SELECT groupId FROM boards);";
       const group = await sequelize.query(sql);
       console.log(group.length);
       console.log(group[0]);
@@ -262,6 +263,38 @@ exports.getAllGroupNoRandom = async (req, res, next) => {
 
     return res.status(200).json(group);
   } catch (err) {
+    return res.status(500).json(err);
+  }
+};
+
+exports.changeLeaderGroup = async (req, res, next) => {
+  try {
+    const rshId = req.body.rshId;
+    const grpId = req.body.grpId;
+    console.log(rshId, grpId);
+    const group = await Group.update(
+      {
+        leaderId: parseInt(rshId),
+      },
+      {
+        where: { id: parseInt(grpId) },
+      }
+    );
+
+    const updatedGroup = await Group.findOne({
+      where: { id: parseInt(grpId) },
+    });
+    const refreshGroupMember = await Researcher.findAll({
+      where: { groupId: parseInt(grpId)},
+      include: Categorie_room 
+    });
+    console.log(updatedGroup);
+    console.log(refreshGroupMember);
+
+    console.log('success');
+    return res.status(200).json({updatedGroup, refreshGroupMember});
+  } catch (err) {
+    console.log(err);
     return res.status(500).json(err);
   }
 };

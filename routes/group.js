@@ -20,4 +20,5 @@ router.put('/changeGroupTitle',groupController.changeGroupTitle)
 router.put('/addGroupMember',groupController.addGroupMember)
 router.post('/removeGroup',groupController.removeGroup)
 router.get('/getAllGroup/random',groupController.getAllGroupNoRandom)
+router.post('/changeLeaderGroup',groupController.changeLeaderGroup)
 module.exports = router;
