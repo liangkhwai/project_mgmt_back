@@ -258,7 +258,12 @@ exports.deLete = async (req, res, next) => {
     const id = req.body.id;
     console.log(id);
     const researcher = await Researcher.findOne({ where: { id: id } });
-    await researcher.destroy();
+    console.log("id researcher : ",researcher.groupId);
+    if (researcher.groupId) {
+      return res.status(500).json("ไม่สามารถลบได้เนื่องจากผู้วิจัยอยู่ในกลุ่ม");
+    }
+      await researcher.destroy();
+    
     console.log("delete success");
     return res.status(200).json("delete success");
   } catch {

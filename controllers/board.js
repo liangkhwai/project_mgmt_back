@@ -99,9 +99,6 @@ exports.addRandom = async (req, res, next) => {
   }
 };
 
-
-
-
 exports.getList = async (req, res, next) => {
   try {
     const grpId = req.params.grpId;
@@ -122,7 +119,7 @@ exports.getList = async (req, res, next) => {
 
     const boardList = await sequelize.query(sql);
 
-    console.log("data is ",boardList);
+    console.log("data is ", boardList);
     return res.status(200).json(boardList[0]);
   } catch (err) {
     console.log(err);
@@ -130,3 +127,44 @@ exports.getList = async (req, res, next) => {
   }
 };
 
+exports.updateBoard = async (req, res, next) => {
+  try {
+    const editBoard = req.body.updatedBoard;
+    const grpId = req.body.grpId;
+    console.log(grpId);
+
+    await Board.destroy({
+      where: { groupId: parseInt(grpId) },
+    });
+    try {
+      for (let board of editBoard) {
+        await Board.create({
+          role: board.role,
+          groupId: board.groupId,
+          teacherId: board.teacherId,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      return res.status(501).json(err);
+    }
+
+    const sql = `SELECT boards.*, teachers.*
+      FROM project_mgmt.boards
+      INNER JOIN teachers ON boards.teacherId = teachers.id
+      WHERE groupId = ${parseInt(grpId)}
+      ORDER BY 
+        CASE WHEN boards.role = 'advisor' THEN 1
+             WHEN boards.role = 'board1' THEN 2
+             WHEN boards.role = 'board2' THEN 3
+             ELSE 4
+        END;
+      `;
+    const updatedBoard = await sequelize.query(sql);
+    console.log(updatedBoard[0]);
+    return res.status(200).json(updatedBoard[0]);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};

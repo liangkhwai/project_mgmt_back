@@ -11,13 +11,20 @@ const Categorie_room = require("./categorie_room");
 const Exam_booking = require("./exam_booking");
 const Exam_result = require("./exam_result");
 // one to many
-Group.hasMany(Researcher, { onDelete: "NO ACTION" });
+Group.hasMany(Researcher, { onDelete: "RESTRICT" });
 Researcher.belongsTo(Group);
 
 Researcher.hasOne(Group,{foreignKey: {
   name: 'leaderId'
 }}, {onDelete:"NO ACTION"});
 // Group.belongsTo(Researcher)
+Group.beforeDestroy(async (instance, options) => {
+  const count = await Researcher.count({ where: { groupId: instance.id } });
+
+  if (count > 0) {
+    throw new Error('Cannot delete group with associated researchers.');
+  }
+});
 
 
 Group.hasMany(Thesis, { onDelete: "NO ACTION" });

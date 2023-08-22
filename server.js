@@ -137,7 +137,7 @@ app.use("/free_hours", freeHoursRoute);
 app.use("/requestExam", requestExamRoute);
 app.use("/files", filesRoute);
 sequelize
-  .sync({ })
+  .sync({})
   .then((result) => {
     app.listen(8080);
   })

@@ -226,9 +226,7 @@ exports.removeGroup = async (req, res, next) => {
     }
     const grpId = req.body.grpId;
 
-    // const group = await Group.findOne({
-    //   where: { id: parseInt(grpId) },
-    // });
+    
 
     try {
       const groupDes = await Group.destroy({ where: { id: parseInt(grpId) } });
