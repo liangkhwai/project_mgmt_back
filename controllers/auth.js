@@ -43,7 +43,7 @@ exports.login = async (req, res, next) => {
         .status(200)
         .cookie("token", token, {
           httpOnly: true,
-          maxAge: 60 * 60 * 1000, // 1 hour
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 1 hour
         })
         .json({
           token: token,
@@ -104,7 +104,7 @@ exports.loginTch = async (req, res, next) => {
               .status(200)
               .cookie("token", token, {
                 httpOnly: true,
-                maxAge: 60 * 60 * 1000, // 1 hour
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 1 hour
               })
               .json({
                 token: token,
@@ -161,7 +161,7 @@ exports.loginTch = async (req, res, next) => {
         .status(200)
         .cookie("token", token, {
           httpOnly: true,
-          maxAge: 60 * 60 * 1000, // 1 hour
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 1 hour
         })
         .json({
           token: token,

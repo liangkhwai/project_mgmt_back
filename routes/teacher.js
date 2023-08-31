@@ -11,4 +11,6 @@ router.post("/insert", teacherController.inSert);
 
 router.post("/delete", teacherController.deLete);
 
+router.get('/list/random',  teacherController.getListRandomAll)
+
 module.exports = router;

@@ -1,3 +1,4 @@
+const sequelize = require("../db");
 const Teachers = require("../models/teacher");
 
 const checkToken = require("../utils/checkToken");
@@ -17,6 +18,25 @@ exports.getList = async (req, res, next) => {
     res.status(404).json("err");
   }
 };
+
+exports.getListRandomAll = async (req,res,next) => {
+  try{
+    // const token = req.cookies.token;
+    // console.log(token);
+    // const check = await checkToken(token);
+    // if(!check){
+    //   res.status(401).json("invalid token or unavalible token");
+    // }
+
+    const sql = `SELECT DISTINCT * FROM teachers ORDER BY RAND()`
+    const teacher = await sequelize.query(sql)
+    console.log(teacher);
+    return res.status(200).json(teacher)
+
+  }catch(err){
+    return res.status(500).json(err)
+  }
+}
 
 exports.inSert = async (req, res, next) => {
   try {
