@@ -11,7 +11,7 @@ exports.getList = async (req, res, next) => {
     if (!check) {
       res.status(401).json("invalid token or unavalible token");
     }
-    const teacher = await Teachers.findAll();
+    const teacher = await Teachers.findAll(); 
     // console.log(teacher)
     res.status(200).json(teacher);
   } catch {
@@ -52,6 +52,7 @@ exports.inSert = async (req, res, next) => {
     const lastname = req.body.lastname;
     const email = req.body.email;
     const tel = req.body.tel;
+    const color_calendar = req.body.color_calendar
     const line_id = req.body.line_id;
 
     const pwd = bcrypt.hashSync(tel, 10);
@@ -62,6 +63,7 @@ exports.inSert = async (req, res, next) => {
       email: email,
       tel: tel,
       pwd:pwd,
+      color_calendar : color_calendar,
       line_id: line_id,
     });
 
@@ -106,6 +108,7 @@ exports.upDate = async (req, res, next) => {
     const lastname = req.body.lastname;
     const email = req.body.email;
     const tel = req.body.tel;
+    const color_calendar = req.body.color_calendar
     const line_id = req.body.line_id;
 
     const teacher = await Teachers.update(
@@ -115,6 +118,7 @@ exports.upDate = async (req, res, next) => {
         lastname: lastname,
         email: email,
         tel: tel,
+        color_calendar : req.body.color_calendar,
         line_id: line_id,
       },
       { where: { id: id } }

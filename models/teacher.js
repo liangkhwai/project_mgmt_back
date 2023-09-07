@@ -32,6 +32,10 @@ const Teacher = sequelize.define("teacher", {
   isAdmin :{
     type:Sequelize.BOOLEAN,
     defaultValue:false
+  },
+  color_calendar:{
+    type:Sequelize.STRING,
+    
   }
 });
 

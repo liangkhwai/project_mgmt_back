@@ -18,7 +18,6 @@ exports.getOne = async (req, res, next) => {
     if (!check) {
       return res.status(401).json("invalid token or unavalible token");
     }
-
     const decoded = jwt.verify(token, "soybad");
     const userId = decoded.userId;
     const role = decoded.role;
