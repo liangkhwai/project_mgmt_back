@@ -8,6 +8,7 @@ const Board = require("../models/board.js");
 const Teacher = require("../models/teacher.js");
 const sequelize = require("../db.js");
 const { createTitleGroup } = require("./group.js");
+const { Sequelize } = require("sequelize");
 exports.request = async (req, res, next) => {
   try {
     console.log(req.body);
@@ -188,3 +189,27 @@ exports.setStatus = async (req, res, next) => {
     return res.status(500).json(err);
   }
 };
+
+
+exports.getLastRequest = async(req,res)=>{
+  try{
+
+    const grpId = req.params.grpId;
+
+  const sql = `SELECT * FROM exam_requests WHERE groupId = ${grpId} ORDER BY exam_requests.id DESC LIMIT 1 `
+
+    const result = await sequelize.query(sql,{
+      type:Sequelize.QueryTypes.SELECT
+    })
+    
+    return res.status(200).json(result[0]);
+
+
+  }catch(err){
+    console.log(err);
+    return res.status(500).json(err);
+  }
+
+
+
+}
