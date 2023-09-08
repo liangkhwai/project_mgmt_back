@@ -22,6 +22,10 @@ const Free_hours = sequelize.define("free_hours", {
     type: Sequelize.DATE,
     allowNull: true,
   },
+  isBooked: {
+    type: Sequelize.BOOLEAN,
+    allowNull: true,
+  },
 });
 
 module.exports = Free_hours;

@@ -69,12 +69,14 @@ exports.getRequest = async (req, res, next) => {
         type: sequelize.QueryTypes.SELECT,
       });
 
-      const requestsWithFiles = await Promise.all(getRequest.map(async (request) => {
-        const files = await Exam_requests_files.findAll({
-          where: { examRequestId: request.id },
-        });
-        return { ...request, files };
-      }));
+      const requestsWithFiles = await Promise.all(
+        getRequest.map(async (request) => {
+          const files = await Exam_requests_files.findAll({
+            where: { examRequestId: request.id },
+          });
+          return { ...request, files };
+        })
+      );
 
       return res.status(200).json(requestsWithFiles);
     } catch (error) {
@@ -87,7 +89,7 @@ exports.getRequest = async (req, res, next) => {
   }
 };
 
-// NOT OPTIMIZE 
+// NOT OPTIMIZE
 // exports.getRequest = async (req, res, next) => {
 //   try {
 //     const token = req.cookies.token;
@@ -99,10 +101,10 @@ exports.getRequest = async (req, res, next) => {
 //     console.log(req.body);
 //     const tchId = parseInt(req.body.tchId);
 //     try {
-//       const sql = `SELECT exam_requests.*,\`groups\`.title FROM exam_requests 
-//       INNER JOIN \`groups\` ON exam_requests.groupId = \`groups\`.id 
-//       INNER JOIN boards ON \`groups\`.id = boards.groupId 
-//       INNER JOIN teachers ON boards.teacherId = teachers.id 
+//       const sql = `SELECT exam_requests.*,\`groups\`.title FROM exam_requests
+//       INNER JOIN \`groups\` ON exam_requests.groupId = \`groups\`.id
+//       INNER JOIN boards ON \`groups\`.id = boards.groupId
+//       INNER JOIN teachers ON boards.teacherId = teachers.id
 //       WHERE boards.role = 'advisor' AND teachers.id = ${tchId};
 //     `;
 //       const getRequest = await sequelize.query(sql);
@@ -181,7 +183,7 @@ exports.setStatus = async (req, res, next) => {
       attributes: ["title"],
     });
     console.log(grpFind);
-    exam_update = {...exam_update,...grpFind.dataValues}
+    exam_update = { ...exam_update, ...grpFind.dataValues };
     console.log(exam_update);
     return res.status(200).json(exam_update);
   } catch (err) {
@@ -190,26 +192,19 @@ exports.setStatus = async (req, res, next) => {
   }
 };
 
-
-exports.getLastRequest = async(req,res)=>{
-  try{
-
+exports.getLastRequest = async (req, res) => {
+  try {
     const grpId = req.params.grpId;
 
-  const sql = `SELECT * FROM exam_requests WHERE groupId = ${grpId} ORDER BY exam_requests.id DESC LIMIT 1 `
+    const sql = `SELECT * FROM exam_requests WHERE groupId = ${grpId} ORDER BY exam_requests.id DESC LIMIT 1 `;
 
-    const result = await sequelize.query(sql,{
-      type:Sequelize.QueryTypes.SELECT
-    })
-    
+    const result = await sequelize.query(sql, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
     return res.status(200).json(result[0]);
-
-
-  }catch(err){
+  } catch (err) {
     console.log(err);
     return res.status(500).json(err);
   }
-
-
-
-}
+};

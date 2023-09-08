@@ -7,6 +7,7 @@ const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
 const Free_hours = require("../models/free_hours");
+const sequelize = require("../db");
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.tz.setDefault("Asia/Bangkok");
@@ -49,10 +50,10 @@ exports.addHours = async (req, res, next) => {
     });
 
     console.log("data that create: ", free_hours_create);
-    const free_hours = await FreeHours.findOne(
-      { where: { id: parseInt(free_hours_create.id) } ,
-       include: [Teacher] },
-    );
+    const free_hours = await FreeHours.findOne({
+      where: { id: parseInt(free_hours_create.id) },
+      include: [Teacher],
+    });
 
     // console.log("data free_hours create", free_hours);
     // console.log(free_hours.start_time);
@@ -249,6 +250,85 @@ exports.getAllEvents = async (req, res, next) => {
       eventsList.push(data);
     }
     return res.status(200).json(eventsList);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.getEventOnlyGroup = async (req, res) => {
+  try {
+    const grpId = parseInt(req.params.grpId);
+    console.log(grpId);
+    const sql = `SELECT free_hours.*,teachers.* FROM project_mgmt.free_hours INNER JOIN teachers ON free_hours.teacherId = teachers.id INNER JOIN boards ON teachers.id = boards.teacherId INNER JOIN \`groups\` ON boards.groupId = \`groups\`.id WHERE \`groups\`.id = ${parseInt(
+      grpId
+    )};`;
+
+    const events = await sequelize.query(sql);
+    const eventsList = [];
+    for (const event of events[0]) {
+      const startTime = dayjs(event.start_time)
+        .utc()
+        .add(7, "hours")
+        .locale("th")
+        .format("YYYY-MM-DD HH:mm:ss");
+      const endTime = dayjs(event.end_time)
+        .utc()
+        .add(7, "hours")
+        .locale("th")
+        .format("YYYY-MM-DD HH:mm:ss");
+
+      let data = {
+        id: parseInt(event.id),
+        start: dayjs(startTime).$d,
+        end: dayjs(endTime).$d,
+        title: event.title,
+        allDay: isBool(event.allDay),
+        teacher: {
+          eventId: event.id,
+          id: event.teacherId,
+          firstname: event.firstname,
+          lastname: event.lastname,
+        },
+      };
+      eventsList.push(data);
+    }
+    const duplicates = [];
+    for (let i = 0; i < eventsList.length; i++) {
+      for (let j = i + 1; j < eventsList.length; j++) {
+        for (let k = j + 1; k < eventsList.length; k++) {
+          // Check if start and end properties are the same
+          if (
+            dayjs(eventsList[i].start).isSame(dayjs(eventsList[j].start)) &&
+            dayjs(eventsList[i].end).isSame(dayjs(eventsList[j].end)) &&
+            dayjs(eventsList[i].start).isSame(dayjs(eventsList[k].start)) &&
+            dayjs(eventsList[i].end).isSame(dayjs(eventsList[k].end))
+          ) {
+            // If duplicate found, add to duplicates array
+            console.log("isit");
+            console.log(eventsList[i]);
+            console.log(eventsList[j]);
+            console.log(eventsList[k]);
+
+            const eventGroup = {
+              start: eventsList[i].start,
+              end: eventsList[i].end,
+              title: "ว่าง",
+              allDay: eventsList[i].allDay,
+              teacher: [
+                eventsList[i].teacher,
+                eventsList[j].teacher,
+                eventsList[k].teacher,
+              ],
+            };
+            console.log(eventGroup);
+            duplicates.push(eventGroup);
+          }
+        }
+      }
+    }
+
+    return res.status(200).json(duplicates);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
