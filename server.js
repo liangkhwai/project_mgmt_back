@@ -22,6 +22,7 @@ const boardRoutes = require("./routes/boards");
 const freeHoursRoute = require("./routes/free_hours");
 const requestExamRoute = require("./routes/request_exam");
 const filesRoute = require("./routes/files");
+const bookingRoute = require("./routes/exam_booking");
 const sequelize = require("./db");
 const multer = require("multer");
 const path = require("path");
@@ -136,6 +137,7 @@ app.use("/group", groupRoutes);
 app.use("/free_hours", freeHoursRoute);
 app.use("/requestExam", requestExamRoute);
 app.use("/files", filesRoute);
+app.use("/exam_booking", bookingRoute);
 sequelize
   .sync({})
   .then((result) => {

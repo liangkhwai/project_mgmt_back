@@ -14,18 +14,23 @@ const Exam_result = require("./exam_result");
 Group.hasMany(Researcher, { onDelete: "RESTRICT" });
 Researcher.belongsTo(Group);
 
-Researcher.hasOne(Group,{foreignKey: {
-  name: 'leaderId'
-}}, {onDelete:"NO ACTION"});
+Researcher.hasOne(
+  Group,
+  {
+    foreignKey: {
+      name: "leaderId",
+    },
+  },
+  { onDelete: "NO ACTION" }
+);
 // Group.belongsTo(Researcher)
 Group.beforeDestroy(async (instance, options) => {
   const count = await Researcher.count({ where: { groupId: instance.id } });
 
   if (count > 0) {
-    throw new Error('Cannot delete group with associated researchers.');
+    throw new Error("Cannot delete group with associated researchers.");
   }
 });
-
 
 Group.hasMany(Thesis, { onDelete: "NO ACTION" });
 Thesis.belongsTo(Group);
@@ -45,8 +50,8 @@ Researcher.belongsTo(Categorie_room);
 Exam_requests.hasMany(Exam_booking, { onDelete: "NO ACTION" });
 Exam_booking.belongsTo(Exam_requests);
 
-Exam_requests.hasMany(Exam_result, { onDelete: "NO ACTION" });
-Exam_result.belongsTo(Exam_requests);
+// Exam_requests.hasMany(Exam_result, { onDelete: "NO ACTION" });
+// Exam_result.belongsTo(Exam_requests);
 
 // Many to Many
 
@@ -70,4 +75,11 @@ Exam_announcements.belongsToMany(Group, {
   through: "exam_requests",
   // as: "groups",
   // foreignKey: "groupId",
+});
+
+Exam_requests.belongsToMany(Exam_booking, {
+  through: "exam_result",
+});
+Exam_booking.belongsToMany(Exam_requests, {
+  through: "exam_result",
 });

@@ -262,7 +262,7 @@ exports.getEventOnlyGroup = async (req, res) => {
     console.log(grpId);
     const sql = `SELECT free_hours.*,teachers.* FROM project_mgmt.free_hours INNER JOIN teachers ON free_hours.teacherId = teachers.id INNER JOIN boards ON teachers.id = boards.teacherId INNER JOIN \`groups\` ON boards.groupId = \`groups\`.id WHERE \`groups\`.id = ${parseInt(
       grpId
-    )};`;
+    )} ;`; //AND isBooked = false อย่าลืมเพิ่มอันนี้
 
     const events = await sequelize.query(sql);
     const eventsList = [];

@@ -159,9 +159,9 @@ exports.setStatus = async (req, res, next) => {
     const exam_request_id = req.body.id;
     const categories = req.body.categories;
     console.log(isApprove, exam_request_id, categories);
-    let statusText = "ไม่อนุมัติการยื่นสอบ " + categories;
+    let statusText = "ไม่อนุมัติการยื่นสอบ";
     if (isApprove) {
-      statusText = "อนุมัติการยื่นสอบ " + categories;
+      statusText = "อนุมัติการยื่นสอบ";
     }
     const exam_request = await Exam_requests.update(
       {
@@ -201,6 +201,7 @@ exports.getLastRequest = async (req, res) => {
     const result = await sequelize.query(sql, {
       type: Sequelize.QueryTypes.SELECT,
     });
+    if(result.length === 0) return res.status(200).json();
 
     return res.status(200).json(result[0]);
   } catch (err) {

@@ -9,14 +9,18 @@ const Exam_booking = sequelize.define("exam_booking", {
     allowNull: false,
     primaryKey: true,
   },
-  start_time:{
+  start_time: {
     type: Sequelize.DATE,
-    allowNull:true,
+    allowNull: true,
   },
-  end_time:{
-    type:Sequelize.DATE,
-    allowNull:true
-  }
+  end_time: {
+    type: Sequelize.DATE,
+    allowNull: true,
+  },
+  isResult: {
+    type: Sequelize.BOOLEAN,
+    allowNull: true,
+  },
 });
 
 module.exports = Exam_booking;
