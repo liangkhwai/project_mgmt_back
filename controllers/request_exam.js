@@ -201,7 +201,7 @@ exports.getLastRequest = async (req, res) => {
     const result = await sequelize.query(sql, {
       type: Sequelize.QueryTypes.SELECT,
     });
-    if(result.length === 0) return res.status(200).json();
+    if (result.length === 0) return res.status(200).json();
 
     return res.status(200).json(result[0]);
   } catch (err) {
