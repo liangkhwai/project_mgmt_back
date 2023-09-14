@@ -196,7 +196,7 @@ exports.getLastRequest = async (req, res) => {
   try {
     const grpId = req.params.grpId;
 
-    const sql = `SELECT * FROM exam_requests WHERE groupId = ${grpId} ORDER BY exam_requests.id DESC LIMIT 1 `;
+    const sql = `SELECT * FROM exam_requests WHERE groupId = ${grpId} ORDER BY exam_requests.id DESC LIMIT 1 `; // อย่าลืมเพิ่ม INNER JOIN ของ booking  กับ result 
 
     const result = await sequelize.query(sql, {
       type: Sequelize.QueryTypes.SELECT,
