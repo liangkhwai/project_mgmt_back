@@ -27,7 +27,17 @@ exports.submitResult = async (req, res, next) => {
     const requestId = req.body.resultId;
     const bookingId = req.body.bookingId;
     const grpId = req.body.grpId;
+    const grpStatus = req.body.groupStatus;
     console.log(req.body);
+    let statusTarget = "";
+    if (grpStatus === "สอบหัวข้อ") {
+      statusTarget = "ยังไม่ยื่นสอบก้าวหน้า";
+    } else if (grpStatus === "สอบก้าวหน้า") {
+      statusTarget = "ยังไม่ยื่นสอบป้องกัน";
+    } else {
+      statusTarget = "รอส่งปริญญานิพนธ์";
+    }
+
     try {
       const exam_result = await Exam_result.create({
         result: result,
@@ -37,19 +47,29 @@ exports.submitResult = async (req, res, next) => {
         .then(async () => {
           const exam_booking = await Booking.update(
             {
-              isResult: result,
+              isResult: true,
             },
             { where: { id: bookingId } }
           );
         })
+
         .then(async () => {
-          const group = await Group.update(
+          const exam_request = await Exam_request.update(
             {
-              status: "สอบหัวข้อ",
+              status: result ? "ผ่าน" : "ไม่ผ่าน",
             },
-            { where: { id: parseInt(grpId) } }
+            { where: { id: parseInt(requestId) } }
           );
-          return res.status(200).json(group);
+          if (result) {
+            const group = await Group.update(
+              {
+                status: statusTarget,
+              },
+              { where: { id: parseInt(grpId) } }
+            );
+          }
+
+          return res.status(200).json(exam_request);
         });
     } catch (err) {
       console.log(err);

@@ -156,26 +156,34 @@ exports.setStatus = async (req, res, next) => {
       res.status(401).json("invalid token or unavalible token");
     }
     const isApprove = req.body.isApprove;
-    const exam_request_id = req.body.id;
+    const exam_request_data = req.body.item;
     const categories = req.body.categories;
-    console.log(isApprove, exam_request_id, categories);
+    console.log(isApprove, exam_request_data, categories);
     let statusText = "ไม่อนุมัติการยื่นสอบ";
     if (isApprove) {
       statusText = "อนุมัติการยื่นสอบ";
+      const group = await Group.update(
+        {
+          status: categories,
+        },
+        {
+          where: { id: parseInt(exam_request_data.groupId) },
+        }
+      );
     }
     const exam_request = await Exam_requests.update(
       {
         isApprove: isApprove,
         status: statusText,
       },
-      { where: { id: parseInt(exam_request_id) } }
+      { where: { id: parseInt(exam_request_data.id) } }
     );
 
     const requestExam = await Exam_requests.findOne({
-      where: { id: parseInt(exam_request_id) },
+      where: { id: parseInt(exam_request_data.id) },
     });
     const files = await Exam_requests_files.findAll({
-      where: { examRequestId: parseInt(exam_request_id) },
+      where: { examRequestId: parseInt(exam_request_data.id) },
     });
     let exam_update = { ...requestExam.dataValues, files };
     const grpFind = await Group.findOne({
@@ -196,7 +204,7 @@ exports.getLastRequest = async (req, res) => {
   try {
     const grpId = req.params.grpId;
 
-    const sql = `SELECT * FROM exam_requests WHERE groupId = ${grpId} ORDER BY exam_requests.id DESC LIMIT 1 `; // อย่าลืมเพิ่ม INNER JOIN ของ booking  กับ result 
+    const sql = `SELECT * FROM exam_requests WHERE groupId = ${grpId} ORDER BY exam_requests.id DESC LIMIT 1 `; // อย่าลืมเพิ่ม INNER JOIN ของ booking  กับ result
 
     const result = await sequelize.query(sql, {
       type: Sequelize.QueryTypes.SELECT,
