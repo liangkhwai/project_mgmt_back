@@ -13,4 +13,7 @@ router.post("/delete", teacherController.deLete);
 
 router.get('/list/random',  teacherController.getListRandomAll)
 router.put('/update/line', teacherController.upDateLine)
+router.post('/line/notify',teacherController.lineNotify)
 module.exports = router;
+
+
