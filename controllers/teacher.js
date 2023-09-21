@@ -2,7 +2,7 @@ const sequelize = require("../db");
 const Teachers = require("../models/teacher");
 
 const checkToken = require("../utils/checkToken");
-const bcrypt = require('bcrypt')
+const bcrypt = require("bcrypt");
 exports.getList = async (req, res, next) => {
   try {
     const token = req.cookies.token;
@@ -11,7 +11,7 @@ exports.getList = async (req, res, next) => {
     if (!check) {
       res.status(401).json("invalid token or unavalible token");
     }
-    const teacher = await Teachers.findAll(); 
+    const teacher = await Teachers.findAll();
     // console.log(teacher)
     res.status(200).json(teacher);
   } catch {
@@ -19,8 +19,8 @@ exports.getList = async (req, res, next) => {
   }
 };
 
-exports.getListRandomAll = async (req,res,next) => {
-  try{
+exports.getListRandomAll = async (req, res, next) => {
+  try {
     // const token = req.cookies.token;
     // console.log(token);
     // const check = await checkToken(token);
@@ -28,15 +28,14 @@ exports.getListRandomAll = async (req,res,next) => {
     //   res.status(401).json("invalid token or unavalible token");
     // }
 
-    const sql = `SELECT DISTINCT * FROM teachers ORDER BY RAND()`
-    const teacher = await sequelize.query(sql)
+    const sql = `SELECT DISTINCT * FROM teachers ORDER BY RAND()`;
+    const teacher = await sequelize.query(sql);
     console.log(teacher);
-    return res.status(200).json(teacher)
-
-  }catch(err){
-    return res.status(500).json(err)
+    return res.status(200).json(teacher);
+  } catch (err) {
+    return res.status(500).json(err);
   }
-}
+};
 
 exports.inSert = async (req, res, next) => {
   try {
@@ -52,7 +51,7 @@ exports.inSert = async (req, res, next) => {
     const lastname = req.body.lastname;
     const email = req.body.email;
     const tel = req.body.tel;
-    const color_calendar = req.body.color_calendar
+    const color_calendar = req.body.color_calendar;
     const line_id = req.body.line_id;
 
     const pwd = bcrypt.hashSync(tel, 10);
@@ -62,8 +61,8 @@ exports.inSert = async (req, res, next) => {
       lastname: lastname,
       email: email,
       tel: tel,
-      pwd:pwd,
-      color_calendar : color_calendar,
+      pwd: pwd,
+      color_calendar: color_calendar,
       line_id: line_id,
     });
 
@@ -108,7 +107,7 @@ exports.upDate = async (req, res, next) => {
     const lastname = req.body.lastname;
     const email = req.body.email;
     const tel = req.body.tel;
-    const color_calendar = req.body.color_calendar
+    const color_calendar = req.body.color_calendar;
     const line_id = req.body.line_id;
 
     const teacher = await Teachers.update(
@@ -118,7 +117,7 @@ exports.upDate = async (req, res, next) => {
         lastname: lastname,
         email: email,
         tel: tel,
-        color_calendar : req.body.color_calendar,
+        color_calendar: req.body.color_calendar,
         line_id: line_id,
       },
       { where: { id: id } }
@@ -130,5 +129,27 @@ exports.upDate = async (req, res, next) => {
     return res.status(200).json(withRef);
   } catch {
     return res.status(401);
+  }
+};
+
+exports.upDateLine = async (req, res, next) => {
+  try {
+    const id = req.body.id;
+    const line_id = req.body.line_id;
+
+    const teacher = await Teachers.update(
+      {
+        line_id: line_id,
+      },
+      { where: { id: parseInt(id) } }
+    );
+    const withRef = await Teachers.findOne({
+      where: { id: id },
+    });
+    console.log("success");
+    return res.status(200).json(withRef);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
   }
 };
