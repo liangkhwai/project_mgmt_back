@@ -3,6 +3,9 @@ const Teachers = require("../models/teacher");
 const { Op } = require("sequelize");
 const checkToken = require("../utils/checkToken");
 const bcrypt = require("bcrypt");
+const dayjs = require("dayjs");
+const Researcher = require("../models/researcher");
+const Categorie_room = require("../models/categorie_room");
 exports.getList = async (req, res, next) => {
   try {
     const token = req.cookies.token;
@@ -160,12 +163,21 @@ exports.lineNotify = async (req, res, next) => {
   try {
     console.log(req.body);
     const teacher_id = req.body.teacher_id;
+    const event = req.body.event;
+    const groupInfo = req.body.groupInfo;
     const teachers = await Teachers.findAll({
-      where: { id: teacher_id.map((item) => parseInt(item)),
+      where: {
+        id: teacher_id.map((item) => parseInt(item)),
         line_id: {
           [Op.not]: null, // Add the condition for line_id not being null
-        }, },
+        },
+      },
     });
+    const researcher = await Researcher.findAll({
+      where: { groupId: parseInt(groupInfo.id) },
+      include: Categorie_room,
+    });
+    // console.log(researcher);
 
     const sendNotify = await fetch(
       "https://api.line.me/v2/bot/message/multicast",
@@ -176,7 +188,9 @@ exports.lineNotify = async (req, res, next) => {
         },
         method: "POST",
         body: JSON.stringify({
-          to: teachers.flatMap((item) => (item ? (item.line_id ? item.line_id : item) : [])),
+          to: teachers.flatMap((item) =>
+            item ? (item.line_id ? item.line_id : item) : []
+          ),
           // to: teachers.map((item) => (item.line_id ? item.line_id : "")),
           messages: [
             {
@@ -208,38 +222,24 @@ exports.lineNotify = async (req, res, next) => {
                         {
                           type: "box",
                           layout: "vertical",
-                          contents: [
-                            {
-                              type: "text",
-                              text: "อาจารย์ปัทมากร เนตยวิจิตร",
-                              size: "xs",
-                            },
-                          ],
+                          contents: teachers.map((item) => {
+                            return {
+                              type: "box",
+                              layout: "vertical",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: `อาจารย์${
+                                    item.role === "advisor" ? "ที่ปรึกษา" : ""
+                                  }${item.firstname} ${item.lastname}`,
+                                  size: "xs",
+                                },
+                              ],
+                              margin: "xs",
+                            };
+                          }),
                         },
-                        {
-                          type: "box",
-                          layout: "vertical",
-                          contents: [
-                            {
-                              type: "text",
-                              text: "อาจารย์ทรรศนีย์ ลุนราศรี",
-                              size: "xs",
-                            },
-                          ],
-                          margin: "xs",
-                        },
-                        {
-                          type: "box",
-                          layout: "vertical",
-                          contents: [
-                            {
-                              type: "text",
-                              text: "อาจารย์ที่ปรึกษา พิชญะภาคย์ พิพิธพัฒน์ไพสิฐ",
-                              wrap: true,
-                              size: "xs",
-                            },
-                          ],
-                        },
+
                         {
                           type: "box",
                           layout: "baseline",
@@ -251,7 +251,7 @@ exports.lineNotify = async (req, res, next) => {
                             },
                             {
                               type: "text",
-                              text: "ป้องกัน",
+                              text: groupInfo.status,
                               size: "xs",
                               flex: 3,
                             },
@@ -263,7 +263,7 @@ exports.lineNotify = async (req, res, next) => {
                           contents: [
                             {
                               type: "text",
-                              text: "ระบบการพัฒนาระบบจองสนามฟุตบอลหญ้าเทียม กรณีศึกษาสนามฟุตบอลหญ้าเทียมริมบึงแก่นนคร",
+                              text: groupInfo.title,
                               style: "normal",
                               weight: "regular",
                               wrap: true,
@@ -286,7 +286,11 @@ exports.lineNotify = async (req, res, next) => {
                             },
                             {
                               type: "text",
-                              text: "02/77/66 13.30-14.30 น.",
+                              text: `${dayjs(event.start).format(
+                                "DD/MM/YY"
+                              )} ${dayjs(event.start).format("HH:mm")}-${dayjs(
+                                event.end
+                              ).format("HH:mm")} น.`,
                               wrap: true,
                               flex: 5,
                               contents: [],
@@ -309,54 +313,33 @@ exports.lineNotify = async (req, res, next) => {
                           margin: "xs",
                         },
                         {
+                          type: "text",
+                          text: "จัดทำโดย",
+                          size: "xs",
+                        },
+                        {
                           type: "box",
                           layout: "vertical",
-                          contents: [
-                            {
-                              type: "text",
-                              text: "จัดทำโดย",
-                              size: "xs",
-                            },
-                            {
-                              type: "text",
-                              text: "นางสาวหทัยชนก ศิริกุล",
-                              wrap: true,
-                              size: "xs",
-                            },
-                            {
-                              type: "text",
-                              text: "63342110306-9",
-                              size: "xs",
-                            },
-                            {
-                              type: "text",
-                              text: "นายศุภวัฒน์ ฝัดวิเศษ",
-                              wrap: true,
-                              size: "xs",
-                            },
-                            {
-                              type: "text",
-                              text: "63342110007-2",
-                              size: "xs",
-                            },
-                            {
-                              type: "text",
-                              text: "นางสาวชนกนันท์ หิรัญนุเคราะห์ ",
-                              wrap: true,
-                              size: "xs",
-                            },
-                            {
-                              type: "text",
-                              text: "63342110129-7",
-                              size: "xs",
-                            },
-                          ],
+                          contents: researcher.map((item) => {
+                            return (
+                              {
+                                type: "text",
+                                text: item.firstname+" "+item.lastname+"\n"+item.student_id,
+                                // wrap: true,
+                                size: "xs",
+                              }
+                              // {
+                              //   type: "text",
+                              //   text: `${item.student_id}`,
+                              //   size: "xs",
+                              // }
+                            );
+                          }),
                         },
                       ],
                     },
                   ],
                 },
-                
               },
             },
           ],
@@ -364,7 +347,7 @@ exports.lineNotify = async (req, res, next) => {
       }
     );
 
-    console.log(sendNotify);
+    // console.log(sendNotify);
 
     return res.status(200).json(teachers);
   } catch (er) {
