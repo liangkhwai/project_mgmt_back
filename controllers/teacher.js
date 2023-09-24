@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const dayjs = require("dayjs");
 const Researcher = require("../models/researcher");
 const Categorie_room = require("../models/categorie_room");
+const Board = require("../models/board");
 exports.getList = async (req, res, next) => {
   try {
     const token = req.cookies.token;
@@ -165,14 +166,24 @@ exports.lineNotify = async (req, res, next) => {
     const teacher_id = req.body.teacher_id;
     const event = req.body.event;
     const groupInfo = req.body.groupInfo;
-    const teachers = await Teachers.findAll({
-      where: {
-        id: teacher_id.map((item) => parseInt(item)),
-        line_id: {
-          [Op.not]: null, // Add the condition for line_id not being null
-        },
-      },
-    });
+
+    // const boards = await Board.findAll({
+    //   where: {
+    //     groupId: parseInt(groupInfo.id),
+    //     line_id: {
+    //       [Op.not]: null,
+    //     },
+    //   },
+    // });
+
+    const getBoards = await fetch(
+      `http://localhost:8080/boards/get/${groupInfo.id}`,
+      {
+        method: "GET",
+      }
+    );
+    const boards = await getBoards.json();
+    console.log(boards);
     const researcher = await Researcher.findAll({
       where: { groupId: parseInt(groupInfo.id) },
       include: Categorie_room,
@@ -188,7 +199,7 @@ exports.lineNotify = async (req, res, next) => {
         },
         method: "POST",
         body: JSON.stringify({
-          to: teachers.flatMap((item) =>
+          to: boards.flatMap((item) =>
             item ? (item.line_id ? item.line_id : item) : []
           ),
           // to: teachers.map((item) => (item.line_id ? item.line_id : "")),
@@ -222,7 +233,7 @@ exports.lineNotify = async (req, res, next) => {
                         {
                           type: "box",
                           layout: "vertical",
-                          contents: teachers.map((item) => {
+                          contents: boards.map((item) => {
                             return {
                               type: "box",
                               layout: "vertical",
@@ -231,7 +242,7 @@ exports.lineNotify = async (req, res, next) => {
                                   type: "text",
                                   text: `อาจารย์${
                                     item.role === "advisor" ? "ที่ปรึกษา" : ""
-                                  }${item.firstname} ${item.lastname}`,
+                                  } ${item.prefix ? item.prefix : ""}${item.firstname} ${item.lastname}`,
                                   size: "xs",
                                 },
                               ],
@@ -321,19 +332,22 @@ exports.lineNotify = async (req, res, next) => {
                           type: "box",
                           layout: "vertical",
                           contents: researcher.map((item) => {
-                            return (
-                              {
-                                type: "text",
-                                text: item.firstname+" "+item.lastname+"\n"+item.student_id,
-                                // wrap: true,
-                                size: "xs",
-                              }
-                              // {
-                              //   type: "text",
-                              //   text: `${item.student_id}`,
-                              //   size: "xs",
-                              // }
-                            );
+                            return {
+                              type: "text",
+                              text:
+                                item.firstname +
+                                " " +
+                                item.lastname +
+                                "\n" +
+                                item.student_id,
+                              // wrap: true,
+                              size: "xs",
+                            };
+                            // {
+                            //   type: "text",
+                            //   text: `${item.student_id}`,
+                            //   size: "xs",
+                            // }
                           }),
                         },
                       ],
@@ -349,7 +363,7 @@ exports.lineNotify = async (req, res, next) => {
 
     // console.log(sendNotify);
 
-    return res.status(200).json(teachers);
+    return res.status(200).json("success");
   } catch (er) {
     console.log(er);
     return res.status(500).json(er);

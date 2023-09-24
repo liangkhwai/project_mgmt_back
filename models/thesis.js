@@ -12,6 +12,7 @@ const Thesis = sequelize.define("thesis", {
   title: Sequelize.STRING,
   description: Sequelize.STRING,
   years: Sequelize.DATE,
+  abstract: Sequelize.STRING,
 });
 
 module.exports = Thesis;
