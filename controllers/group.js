@@ -179,13 +179,14 @@ exports.getGroupMember = async (req, res, next) => {
     }
 
     const grpId = req.body.grpId;
-    console.log(grpId);
+    console.log(req.body.grpId);
+    console.log("GRPID = : : " + grpId);
 
     const researcher = await Researcher.findAll({
       where: { groupId: parseInt(grpId) },
       include: Categorie_room,
     });
-    console.log(researcher);
+    // console.log("รายชื่อ " + researcher);
 
     return res.status(200).json(researcher);
   } catch (err) {
@@ -225,8 +226,6 @@ exports.removeGroup = async (req, res, next) => {
       return res.status(401).json("invalid token or unavalible token");
     }
     const grpId = req.body.grpId;
-
-    
 
     try {
       const groupDes = await Group.destroy({ where: { id: parseInt(grpId) } });
@@ -283,14 +282,14 @@ exports.changeLeaderGroup = async (req, res, next) => {
       where: { id: parseInt(grpId) },
     });
     const refreshGroupMember = await Researcher.findAll({
-      where: { groupId: parseInt(grpId)},
-      include: Categorie_room 
+      where: { groupId: parseInt(grpId) },
+      include: Categorie_room,
     });
     console.log(updatedGroup);
     console.log(refreshGroupMember);
 
-    console.log('success');
-    return res.status(200).json({updatedGroup, refreshGroupMember});
+    console.log("success");
+    return res.status(200).json({ updatedGroup, refreshGroupMember });
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);

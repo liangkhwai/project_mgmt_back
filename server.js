@@ -24,6 +24,7 @@ const requestExamRoute = require("./routes/request_exam");
 const filesRoute = require("./routes/files");
 const bookingRoute = require("./routes/exam_booking");
 const resultRoute = require("./routes/exam_result");
+const thesisRoute = require("./routes/thesis");
 const sequelize = require("./db");
 const multer = require("multer");
 const path = require("path");
@@ -140,6 +141,7 @@ app.use("/requestExam", requestExamRoute);
 app.use("/files", filesRoute);
 app.use("/exam_booking", bookingRoute);
 app.use("/result", resultRoute);
+app.use("/thesis", thesisRoute);
 sequelize
   .sync({})
   .then((result) => {
