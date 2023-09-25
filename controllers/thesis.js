@@ -1,5 +1,7 @@
 const Thesis = require("../models/thesis");
 const ThesisFiles = require("../models/thesis_files");
+const Group = require("../models/group");
+
 exports.upload = async (req, res, next) => {
   try {
     console.log(req.body);
@@ -28,9 +30,36 @@ exports.upload = async (req, res, next) => {
       thesisId: theses.id,
     });
 
+    const group = await Group.update(
+      {
+        status: "ส่งปริญญานิพนธ์แล้ว",
+      },
+      {
+        where: {
+          id: parseInt(req.body.grpId),
+        },
+      }
+    );
+
     return res.status(200).json("success");
   } catch (er) {
     console.log(er);
     return res.status(500).json(er);
+  }
+};
+
+exports.getThesis = async (req, res, next) => {
+  try {
+    const grpId = req.params.grpId;
+    console.log(grpId);
+    const thesis = await Thesis.findOne({
+      where: { groupId: parseInt(grpId) },
+      include: ThesisFiles,
+    });
+
+    return res.status(200).json(thesis);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
   }
 };
