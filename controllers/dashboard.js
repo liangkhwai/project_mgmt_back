@@ -5,9 +5,7 @@ const Files = require("../models/files");
 exports.list = async (req, res, next) => {
   try {
     result = [];
-
     const group = await Group.findAll();
-
     result = { ...result, countGroup: group.length };
     const resercher = await researcher.findAll();
     result = { ...result, countResearcher: resercher.length };
@@ -43,6 +41,17 @@ exports.list = async (req, res, next) => {
     result = {
       ...result,
       countAdvisor: countAdvisor,
+    };
+
+    const sqlGroupWithBoards =
+      "SELECT g.*,CONCAT(a_teacher.firstname, ' ', a_teacher.lastname) AS advisor_name, CONCAT(b1_teacher.firstname, ' ', b1_teacher.lastname) AS board1_name, CONCAT(b2_teacher.firstname, ' ', b2_teacher.lastname) AS board2_name,COUNT(rsh.id) AS researcher_count FROM `groups` AS g LEFT JOIN boards AS a ON g.id = a.groupId AND a.role = 'advisor' LEFT JOIN teachers AS a_teacher ON a.teacherId = a_teacher.id LEFT JOIN boards AS b1 ON g.id = b1.groupId AND b1.role = 'board1' LEFT JOIN teachers AS b1_teacher ON b1.teacherId = b1_teacher.id LEFT JOIN boards AS b2 ON g.id = b2.groupId AND b2.role = 'board2' LEFT JOIN teachers AS b2_teacher ON b2.teacherId = b2_teacher.id LEFT JOIN researchers AS rsh ON rsh.groupId = g.id GROUP BY g.id, g.title, g.status, g.createdAt, g.updatedAt, g.leaderId, advisor_name, board1_name, board2_name;";
+
+    const groupWithBoards = await Group.sequelize.query(sqlGroupWithBoards, {
+      type: Group.sequelize.QueryTypes.SELECT,
+    });
+    result = {
+      ...result,
+      groupWithBoards: groupWithBoards,
     };
 
     return res.status(200).json(result);
