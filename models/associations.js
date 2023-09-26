@@ -14,15 +14,20 @@ const Exam_result = require("./exam_result");
 Group.hasMany(Researcher, { onDelete: "RESTRICT" });
 Researcher.belongsTo(Group);
 
-Researcher.hasOne(
-  Group,
-  {
-    foreignKey: {
-      name: "leaderId",
-    },
-  },
-  { onDelete: "NO ACTION" }
-);
+// Researcher.hasOne(
+//   Group,
+//   {
+//     foreignKey: {
+//       name: "leaderId",
+//     },
+//   },
+//   { onDelete: "NO ACTION" }
+// );
+Group.belongsTo(Researcher, {
+  foreignKey: "leaderId",
+  onDelete: "NO ACTION",
+  // as: "groupLeader",
+});
 // Group.belongsTo(Researcher)
 Group.beforeDestroy(async (instance, options) => {
   const count = await Researcher.count({ where: { groupId: instance.id } });

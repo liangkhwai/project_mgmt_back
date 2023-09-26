@@ -30,7 +30,7 @@ exports.create = async (req, res, next) => {
     );
   }
   console.log("success");
-  return res.status(200).json("Success");
+  return res.status(200).json(group.id);
 };
 
 exports.getGroup = async (req, res, next) => {

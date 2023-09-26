@@ -25,6 +25,7 @@ const filesRoute = require("./routes/files");
 const bookingRoute = require("./routes/exam_booking");
 const resultRoute = require("./routes/exam_result");
 const thesisRoute = require("./routes/thesis");
+const dashboardRoute = require("./routes/dashboard");
 const sequelize = require("./db");
 const multer = require("multer");
 const path = require("path");
@@ -34,7 +35,6 @@ const fs = require("fs");
 const Files = require("./models/files");
 const Exam_requests_files = require("./models/exam_requests_files");
 const app = express();
-const upload = multer();
 const corsOptions = {
   origin: "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTION"],
@@ -142,6 +142,7 @@ app.use("/files", filesRoute);
 app.use("/exam_booking", bookingRoute);
 app.use("/result", resultRoute);
 app.use("/thesis", thesisRoute);
+app.use("/dashboard", dashboardRoute);
 sequelize
   .sync({})
   .then((result) => {

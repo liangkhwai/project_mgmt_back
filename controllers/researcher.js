@@ -3,9 +3,9 @@ const checkToken = require("../utils/checkToken");
 const categories = require("../models/categorie_room");
 const bcrypt = require("bcrypt");
 const xlsx = require("xlsx");
-const multer = require("multer");
+// const multer = require("multer");
 const jwt = require("jsonwebtoken");
-const Admin = require("../models/admin");
+// const Admin = require("../models/admin");
 const sequelize = require("../db");
 const Categorie_room = require("../models/categorie_room");
 const Group = require("../models/group");
@@ -94,22 +94,28 @@ exports.getGroupList = async (req, res, next) => {
 
 exports.getList = async (req, res, next) => {
   try {
-    // const researcher = await Researcher.findAll({ include: categories });
-    // // console.log(researcher);
-    // const sql = `SELECT *
-    // FROM researchers
-    // LEFT JOIN categorie_rooms ON researchers.id = categorie_rooms.id
-    // LEFT JOIN \`groups\` ON researchers.groupId = \`groups\`.id;
-    // `
-    // const researcher = await sequelize.query(sql)
+    // const researcher = await Researcher.findAll({
+    //   include: [{ model: Categorie_room ,require: false }, { model: Group , require: false }],
+    // });
     const researcher = await Researcher.findAll({
-      include: [
-        { model: Categorie_room, required: false },
-        { model: Group, required: false },
-      ],
+      include: [Categorie_room, Group],
     });
     console.log(researcher);
     return res.status(200).json(researcher);
+  } catch {
+    return res.status(401);
+  }
+};
+exports.getListt = async (req, res, next) => {
+  try {
+    const sql = `SELECT *
+    FROM researchers
+    LEFT JOIN categorie_rooms ON researchers.id = categorie_rooms.id
+    LEFT JOIN \`groups\` ON researchers.groupId = \`groups\`.id;
+    `;
+    const researcher = await sequelize.query(sql);
+
+    return res.status(200).json(researcher[0]);
   } catch {
     return res.status(401);
   }
@@ -257,12 +263,12 @@ exports.deLete = async (req, res, next) => {
     const id = req.body.id;
     console.log(id);
     const researcher = await Researcher.findOne({ where: { id: id } });
-    console.log("id researcher : ",researcher.groupId);
+    console.log("id researcher : ", researcher.groupId);
     if (researcher.groupId) {
       return res.status(500).json("ไม่สามารถลบได้เนื่องจากผู้วิจัยอยู่ในกลุ่ม");
     }
-      await researcher.destroy();
-    
+    await researcher.destroy();
+
     console.log("delete success");
     return res.status(200).json("delete success");
   } catch {
