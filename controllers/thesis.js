@@ -63,3 +63,18 @@ exports.getThesis = async (req, res, next) => {
     return res.status(500).json(err);
   }
 };
+
+exports.getAllTheses = async (req, res, next) => {
+  try {
+    const sql =
+      "SELECT g.*,CONCAT(a_teacher.firstname, ' ', a_teacher.lastname) AS advisor_name, CONCAT(b1_teacher.firstname, ' ', b1_teacher.lastname) AS board1_name,CONCAT(b2_teacher.firstname, ' ', b2_teacher.lastname) AS board2_name,GROUP_CONCAT(DISTINCT CONCAT(r.firstname, ' ', r.lastname) SEPARATOR ', ') AS researchers_names,tf.filename FROM theses AS g LEFT JOIN boards AS a ON g.groupId = a.groupId AND a.role = 'advisor' LEFT JOIN teachers AS a_teacher ON a.teacherId = a_teacher.id LEFT JOIN boards AS b1 ON g.groupId = b1.groupId AND b1.role = 'board1' LEFT JOIN teachers AS b1_teacher ON b1.teacherId = b1_teacher.id LEFT JOIN boards AS b2 ON g.groupId = b2.groupId AND b2.role = 'board2' LEFT JOIN teachers AS b2_teacher ON b2.teacherId = b2_teacher.id LEFT JOIN researchers AS r ON r.groupId = g.groupId LEFT JOIN thesis_files AS tf ON tf.thesisId = g.id GROUP BY g.id, g.title, g.createdAt, g.updatedAt, advisor_name, board1_name, board2_name, tf.filename;";
+    const theses = await Thesis.sequelize.query(sql, {
+      type: Thesis.sequelize.QueryTypes.SELECT,
+    });
+
+    return res.status(200).json(theses);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};

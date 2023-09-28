@@ -5,7 +5,7 @@ const teacher = require("./models/teacher");
 const free_hours = require("./models/free_hours");
 const board = require("./models/board");
 const thesis = require("./models/thesis");
-const thesis_files = require("./models/thesis_files");
+const Thesis_files = require("./models/thesis_files");
 const exam_requests_files = require("./models/exam_requests_files");
 const announcements = require("./models/exam_announcements");
 const exam_requests = require("./models/exam_requests");
@@ -129,7 +129,39 @@ app.get("/files/request/:slug", async (req, res) => {
     return res.status(500).json(er);
   }
 });
+app.get("/files/thesis/:slug", async (req, res) => {
+  const { slug } = req.params;
+  console.log(slug);
+  try {
+    const file = await Thesis_files.findOne({
+      where: { filename: slug },
+    });
+    const sanitizedSlug = sanitizeFilename(file.filename);
+    const pdfFilePath = path.join(
+      __dirname,
+      "upload",
+      "files",
+      "thesis",
+      `${file.filename ? file.filename : ""}`
+    );
+    console.log(pdfFilePath);
 
+    if (fs.existsSync(pdfFilePath)) {
+      const pdfData = fs.readFileSync(pdfFilePath);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `inline; filename*=UTF-8''${encodeURIComponent(file.originalname)}`
+      );
+      res.send(pdfData);
+    } else {
+      res.status(404).send("File not found.");
+    }
+  } catch (er) {
+    console.log(er);
+    return res.status(500).json(er);
+  }
+});
 app.use("/researcher", researcherRoutes);
 app.use("/auth", authRoutes);
 app.use("/categories", categoriesRoutes);
