@@ -98,6 +98,54 @@ exports.addRandom = async (req, res, next) => {
     return res.status(500).json(err);
   }
 };
+exports.addRandomManual = async (req, res, next) => {
+  const { grp } = req.body; 
+  console.log(grp);
+  try {
+    // Start a transaction
+    await sequelize.transaction(async (t) => {
+      const grpId = grp.id;
+      const advisorId = grp.boards.advisor.id;
+      const board1Id = grp.boards.board1.id;
+      const board2Id = grp.boards.board2.id;
+
+      // Create advisor
+      await Board.create(
+        {
+          role: grp.boards.advisor.role,
+          groupId: parseInt(grpId),
+          teacherId: parseInt(advisorId),
+        },
+        { transaction: t }
+      );
+
+      // Create board1
+      await Board.create(
+        {
+          role: grp.boards.board1.role,
+          groupId: parseInt(grpId),
+          teacherId: parseInt(board1Id),
+        },
+        { transaction: t }
+      );
+
+      // Create board2
+      await Board.create(
+        {
+          role: grp.boards.board2.role,
+          groupId: parseInt(grpId),
+          teacherId: parseInt(board2Id),
+        },
+        { transaction: t }
+      );
+    });
+
+    return res.status(200).json(":)");
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
 
 exports.getList = async (req, res, next) => {
   try {
