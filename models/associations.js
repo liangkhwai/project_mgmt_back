@@ -10,6 +10,7 @@ const Free_hours = require("./free_hours");
 const Categorie_room = require("./categorie_room");
 const Exam_booking = require("./exam_booking");
 const Exam_result = require("./exam_result");
+const Boards = require("./board");
 // one to many
 Group.hasMany(Researcher, { onDelete: "RESTRICT" });
 Researcher.belongsTo(Group);
@@ -31,9 +32,19 @@ Group.belongsTo(Researcher, {
 // Group.belongsTo(Researcher)
 Group.beforeDestroy(async (instance, options) => {
   const count = await Researcher.count({ where: { groupId: instance.id } });
-
+  const countThesis = await Thesis.count({ where: { groupId: instance.id } });
+  const countExan = await Exam_requests.count({
+    where: { groupId: instance.id },
+  });
+  const countBoards = await Boards.count({ where: { groupId: instance.id } });
   if (count > 0) {
     throw new Error("Cannot delete group with associated researchers.");
+  } else if (countThesis > 0) {
+    throw new Error("Cannot delete group with associated thesis.");
+  } else if (countExan > 0) {
+    throw new Error("Cannot delete group with associated exam.");
+  } else if (countBoards > 0) {
+    throw new Error("Cannot delete group with associated board.");
   }
 });
 

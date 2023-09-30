@@ -1,6 +1,9 @@
 const Board = require("../models/board.js");
 const Categorie_room = require("../models/categorie_room.js");
 const Group = require("../models/group.js");
+const Thesis = require("../models/thesis.js");
+const Exam_requests = require("../models/exam_requests.js");
+
 const Researcher = require("../models/researcher.js");
 const checkToken = require("../utils/checkToken");
 const jwt = require("jsonwebtoken");
@@ -228,8 +231,33 @@ exports.removeGroup = async (req, res, next) => {
     const grpId = req.body.grpId;
 
     try {
-      const groupDes = await Group.destroy({ where: { id: parseInt(grpId) } });
-      return res.status(200).json(parseInt(grpId));
+      const count = await Researcher.count({
+        where: { groupId: parseInt(grpId) },
+      });
+      const countThesis = await Thesis.count({
+        where: { groupId: parseInt(grpId) },
+      });
+      const countExan = await Exam_requests.count({
+        where: { groupId: parseInt(grpId) },
+      });
+      const countBoards = await Board.count({
+        where: { groupId: parseInt(grpId) },
+      });
+      if (count > 0) {
+        throw new Error("Cannot delete group with associated researchers.");
+      } else if (countThesis > 0) {
+        throw new Error("Cannot delete group with associated thesis.");
+      } else if (countExan > 0) {
+        throw new Error("Cannot delete group with associated exam.");
+      } else if (countBoards > 0) {
+        throw new Error("Cannot delete group with associated board.");
+      } else {
+        const groupDes = await Group.destroy({
+          where: { id: parseInt(grpId) },
+        });
+
+        return res.status(200).json(parseInt(grpId));
+      }
     } catch (err) {
       console.error("Database error:", err);
       return res.status(500).json({

@@ -140,6 +140,7 @@ exports.upDate = async (req, res, next) => {
     const tel = req.body.tel;
     const grade = req.body.grade;
     const isLate = req.body.isLate;
+    const waitRegister = req.body.waitRegister;
 
     const researcher = await Researcher.update(
       {
@@ -151,6 +152,7 @@ exports.upDate = async (req, res, next) => {
         tel: tel,
         grade: grade,
         isLate: isLate,
+        waitRegister: waitRegister,
       },
       { where: { id: id } }
     );

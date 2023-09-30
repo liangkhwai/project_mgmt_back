@@ -48,6 +48,10 @@ const Researcher = sequelize.define("researcher", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
+  waitRegister: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 module.exports = Researcher;

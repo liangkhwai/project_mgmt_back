@@ -113,6 +113,7 @@ exports.upDate = async (req, res, next) => {
     const tel = req.body.tel;
     const color_calendar = req.body.color_calendar;
     const line_id = req.body.line_id;
+    const isAdmin = req.body.isAdmin;
 
     const teacher = await Teachers.update(
       {
@@ -123,6 +124,7 @@ exports.upDate = async (req, res, next) => {
         tel: tel,
         color_calendar: req.body.color_calendar,
         line_id: line_id,
+        isAdmin: isAdmin,
       },
       { where: { id: id } }
     );
@@ -369,3 +371,4 @@ exports.lineNotify = async (req, res, next) => {
     return res.status(500).json(er);
   }
 };
+
