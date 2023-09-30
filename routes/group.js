@@ -15,10 +15,13 @@ router.post("/getOneGroup", groupController.getOneGroup);
 
 router.post("/getGroupMember", groupController.getGroupMember);
 router.put("/removeFromGroup", groupController.removeResearcherFromGroup);
-
 router.put("/changeGroupTitle", groupController.changeGroupTitle);
 router.put("/addGroupMember", groupController.addGroupMember);
 router.post("/removeGroup", groupController.removeGroup);
 router.get("/getAllGroup/random", groupController.getAllGroupNoRandom);
 router.post("/changeLeaderGroup", groupController.changeLeaderGroup);
+router.post(
+  "/updateInCompleteGroup",
+  groupController.updateGroupInCompleteMember
+);
 module.exports = router;

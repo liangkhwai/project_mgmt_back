@@ -24,10 +24,9 @@ const Researcher = sequelize.define("researcher", {
     type: Sequelize.STRING,
     allowNull: true,
   },
-  isEditGradeProject:{
+  isEditGradeProject: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
-    
   },
   student_id: {
     type: Sequelize.STRING,
@@ -44,6 +43,10 @@ const Researcher = sequelize.define("researcher", {
   pwd: {
     type: Sequelize.STRING,
     allowNull: true,
+  },
+  isLate: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
   },
 });
 

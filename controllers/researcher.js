@@ -139,6 +139,7 @@ exports.upDate = async (req, res, next) => {
     const email = req.body.email;
     const tel = req.body.tel;
     const grade = req.body.grade;
+    const isLate = req.body.isLate;
 
     const researcher = await Researcher.update(
       {
@@ -149,6 +150,7 @@ exports.upDate = async (req, res, next) => {
         categorieRoomId: parseInt(categorieRoomId),
         tel: tel,
         grade: grade,
+        isLate: isLate,
       },
       { where: { id: id } }
     );
@@ -294,3 +296,5 @@ exports.updateGradeProject = async (req, res, next) => {
     return res.status(500).json(err);
   }
 };
+
+

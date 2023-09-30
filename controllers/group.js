@@ -295,3 +295,28 @@ exports.changeLeaderGroup = async (req, res, next) => {
     return res.status(500).json(err);
   }
 };
+
+exports.updateGroupInCompleteMember = async (req, res, next) => {
+  try {
+    const grpId = req.body.grpId;
+    console.log(grpId);
+    try {
+      const fetchMember = await Researcher.update(
+        {
+          isLate: true,
+        },
+        {
+          where: { groupId: parseInt(grpId) },
+        }
+      );
+    } catch (er) {
+      console.log(er);
+    }
+
+    console.log("success");
+    return res.status(200).json("success");
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
