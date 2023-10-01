@@ -52,6 +52,11 @@ const Researcher = sequelize.define("researcher", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
+  isActive :{
+    type: Sequelize.BOOLEAN,
+    defaultValue: true,
+
+  }
 });
 
 module.exports = Researcher;
