@@ -2,6 +2,7 @@ const Group = require("../models/group");
 const researcher = require("../models/researcher");
 const Thesis = require("../models/thesis");
 const Files = require("../models/files");
+const Categorie_room = require("../models/categorie_room");
 exports.list = async (req, res, next) => {
   try {
     result = [];
@@ -52,6 +53,29 @@ exports.list = async (req, res, next) => {
     result = {
       ...result,
       groupWithBoards: groupWithBoards,
+    };
+
+    const researcherWithInComplete = await researcher.findAll({
+      where: {
+        isLate: true,
+      },
+      include: Categorie_room,
+    });
+
+    result = {
+      ...result,
+      researcherWithInComplete: researcherWithInComplete,
+    };
+
+    const researcherWithNotRegistger = await researcher.findAll({
+      where: {
+        waitRegister: true,
+      },
+      include: Categorie_room,
+    });
+    result = {
+      ...result,
+      researcherWithNotRegistger: researcherWithNotRegistger,
     };
 
     return res.status(200).json(result);
