@@ -9,7 +9,7 @@ exports.login = async (req, res, next) => {
   const password = req.body.password;
   let loadedUser;
 
-  await Researcher.findOne({ where: { student_id: id } })
+  await Researcher.findOne({ where: { student_id: id, isActive: true } })
     .then(async (researcher) => {
       if (!researcher) {
         return res.status(404).json("user not found");
@@ -50,7 +50,7 @@ exports.login = async (req, res, next) => {
           userId: loadedUser.id.toString(),
           userName: loadedUser.firstname,
           status: 200,
-          grpId:loadedUser.groupId,
+          grpId: loadedUser.groupId,
           userData: loadedUser,
           role: "researcher",
         });
@@ -60,7 +60,7 @@ exports.login = async (req, res, next) => {
     });
 };
 
-exports.loginTch = async (req, res, next) => {  
+exports.loginTch = async (req, res, next) => {
   console.log("tchLogged");
   const email = req.body.email;
   const password = req.body.pwd;
@@ -120,14 +120,14 @@ exports.loginTch = async (req, res, next) => {
       console.log(loadedUser);
       console.log(typeof password, typeof loadedUser.pwd);
       console.log(password, loadedUser.pwd);
-      const pwdCompare = await bcrypt.compare(password,loadedUser.pwd)
-      return {pwdCompare,teacher}
+      const pwdCompare = await bcrypt.compare(password, loadedUser.pwd);
+      return { pwdCompare, teacher };
       // return true
     })
     .then((isEqual) => {
-      console.log('in');
+      console.log("in");
       console.log(isEqual);
-      console.log('out');
+      console.log("out");
       if (!isEqual.pwdCompare) {
         const error = new Error("Wrong password");
         error.statuscode = 401;
@@ -135,16 +135,16 @@ exports.loginTch = async (req, res, next) => {
       }
       console.log(isEqual.teacher.dataValues.isAdmin);
 
-      console.log('pass compare');
-      let isAdmin = false
+      console.log("pass compare");
+      let isAdmin = false;
 
-      if(isEqual.teacher.dataValues.isAdmin === true){
-        isAdmin = true
+      if (isEqual.teacher.dataValues.isAdmin === true) {
+        isAdmin = true;
       }
       // console.log(isEqual.teacher.teacher.dataValues);
 
       console.log(isAdmin);
-      console.log('pass admin check');
+      console.log("pass admin check");
       const token = jwt.sign(
         {
           email: loadedUser.email,
@@ -167,7 +167,7 @@ exports.loginTch = async (req, res, next) => {
           token: token,
           userId: loadedUser.id.toString(),
           userName: loadedUser.firstname,
-          
+
           status: 200,
           role: isAdmin ? "admin" : "teacher",
         });
