@@ -100,7 +100,7 @@ exports.getList = async (req, res, next) => {
     const researcher = await Researcher.findAll({
       include: [Categorie_room, Group],
     });
-    console.log(researcher);
+    // console.log(researcher);
     return res.status(200).json(researcher);
   } catch {
     return res.status(401);
@@ -142,6 +142,7 @@ exports.upDate = async (req, res, next) => {
     const isLate = req.body.isLate;
     const waitRegister = req.body.waitRegister;
     const isActive = req.body.isActive;
+    const term = req.body.term;
 
     const researcher = await Researcher.update(
       {
@@ -155,6 +156,7 @@ exports.upDate = async (req, res, next) => {
         isLate: isLate,
         waitRegister: waitRegister,
         isActive: isActive,
+        term: term,
       },
       { where: { id: id } }
     );
