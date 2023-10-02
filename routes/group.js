@@ -24,4 +24,5 @@ router.post(
   "/updateInCompleteGroup",
   groupController.updateGroupInCompleteMember
 );
+router.put("/requestTitle", groupController.requestGroupTitle);
 module.exports = router;

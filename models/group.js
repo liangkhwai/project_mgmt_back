@@ -18,6 +18,10 @@ const Group = sequelize.define("group", {
     // allowNull: true,
     defaultValue: "ยังไม่ยื่นสอบหัวข้อ"
   },
+  isApproveTitle: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 module.exports = Group;

@@ -348,3 +348,28 @@ exports.updateGroupInCompleteMember = async (req, res, next) => {
     return res.status(500).json(err);
   }
 };
+
+exports.requestGroupTitle = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    const check = await checkToken(token);
+    if (!check) {
+      return res.status(401).json("invalid token or unavalible token");
+    }
+
+    const title = req.body.title;
+    const groupId = req.body.groupId;
+    const group = await Group.update(
+      {
+        title: title,
+        // isApproveTitle: true,
+        status: "ยื่นเสนอหัวข้อ",
+      },
+      { where: { id: parseInt(groupId) } }
+    );
+    return res.status(200).json(group);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
