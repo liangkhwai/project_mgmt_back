@@ -52,11 +52,15 @@ const Researcher = sequelize.define("researcher", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
-  isActive :{
+  isActive: {
     type: Sequelize.BOOLEAN,
     defaultValue: true,
-
-  }
+  },
+  term: {
+    type: Sequelize.STRING,
+    allowNull: true,
+    defaultValue: "ยังไม่ลงเทอม",
+  },
 });
 
 module.exports = Researcher;
