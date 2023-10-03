@@ -25,4 +25,6 @@ router.post(
   groupController.updateGroupInCompleteMember
 );
 router.put("/requestTitle", groupController.requestGroupTitle);
+router.get("/unApproveTitle", groupController.getGroupUnApproveTitle);
+router.put("/approveTitle/:grpId", groupController.approveTitle);
 module.exports = router;

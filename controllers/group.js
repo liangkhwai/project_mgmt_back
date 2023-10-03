@@ -373,3 +373,48 @@ exports.requestGroupTitle = async (req, res, next) => {
     return res.status(500).json(err);
   }
 };
+
+exports.getGroupUnApproveTitle = async (req, res, next) => {
+  try {
+    const group = await Group.findAll({
+      where: { isApproveTitle: false, status: "ยื่นเสนอหัวข้อ" },
+    });
+    return res.status(200).json(group);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.approveTitle = async (req, res, next) => {
+  try {
+    const grpId = req.params.grpId;
+    const result = req.body.result;
+    console.log(req.body);
+    console.log(grpId);
+    if (result === true) {
+      const group = await Group.update(
+        {
+          isApproveTitle: result,
+          // title: title,
+          status: "สอบหัวข้อ",
+        },
+        { where: { id: parseInt(grpId) } }
+      );
+      return res.status(200).json(group);
+    } else {
+      const group = await Group.update(
+        {
+          isApproveTitle: result,
+          title: "",
+          status: "ยังไม่ยื่นสอบหัวข้อ",
+        },
+        { where: { id: parseInt(grpId) } }
+      );
+      return res.status(200).json(group);
+    }
+  } catch (er) {
+    console.log(er);
+    return res.status(500).json(er);
+  }
+};
