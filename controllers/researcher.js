@@ -143,6 +143,8 @@ exports.upDate = async (req, res, next) => {
     const waitRegister = req.body.waitRegister;
     const isActive = req.body.isActive;
     const term = req.body.term;
+    const grade_project = req.body.grade_project;
+    const isEditGradeProject = req.body.isEditGradeProject;
 
     const researcher = await Researcher.update(
       {
@@ -157,6 +159,8 @@ exports.upDate = async (req, res, next) => {
         waitRegister: waitRegister,
         isActive: isActive,
         term: term,
+        grade_project: grade_project,
+        isEditGradeProject: isEditGradeProject,
       },
       { where: { id: id } }
     );

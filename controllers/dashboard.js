@@ -28,7 +28,7 @@ exports.list = async (req, res, next) => {
     };
 
     const sqlCountStatus =
-      "SELECT COALESCE(COUNT(g.status), 0) AS count FROM ( SELECT 'ยังไม่ยื่นสอบหัวข้อ' AS status UNION ALL SELECT 'สอบหัวข้อ' UNION ALL SELECT 'ยังไม่ยื่นสอบก้าวหน้า' UNION ALL SELECT 'สอบก้าวหน้า' UNION ALL SELECT 'ยังไม่ยื่นสอบป้องกัน' UNION ALL SELECT 'สอบป้องกัน') AS s LEFT JOIN project_mgmt.groups AS g ON s.status = g.status GROUP BY s.status;";
+      "SELECT COALESCE(COUNT(g.status), 0) AS count FROM ( SELECT 'ยังไม่ยื่นสอบหัวข้อ' AS status UNION ALL SELECT 'สอบหัวข้อ' UNION ALL SELECT 'ยังไม่ยื่นสอบก้าวหน้า' UNION ALL SELECT 'สอบก้าวหน้า' UNION ALL SELECT 'ยังไม่ยื่นสอบป้องกัน' UNION ALL SELECT 'สอบป้องกัน' UNION ALL SELECT 'รอส่งปริญญานิพนธ์' UNION ALL SELECT 'ส่งปริญญานิพนธ์แล้ว') AS s LEFT JOIN project_mgmt.groups AS g ON s.status = g.status GROUP BY s.status;";
     const countStatus = await Group.sequelize.query(sqlCountStatus, {
       type: Group.sequelize.QueryTypes.SELECT,
     });
