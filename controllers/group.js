@@ -397,7 +397,7 @@ exports.approveTitle = async (req, res, next) => {
         {
           isApproveTitle: result,
           // title: title,
-          status: "สอบหัวข้อ",
+          status: "ยังไม่ยื่นสอบหัวข้อ",
         },
         { where: { id: parseInt(grpId) } }
       );
@@ -407,7 +407,7 @@ exports.approveTitle = async (req, res, next) => {
         {
           isApproveTitle: result,
           title: "",
-          status: "ยังไม่ยื่นสอบหัวข้อ",
+          status: "ยังไม่ยื่นเสนอหัวข้อ",
         },
         { where: { id: parseInt(grpId) } }
       );

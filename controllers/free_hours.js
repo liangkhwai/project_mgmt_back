@@ -41,6 +41,16 @@ exports.addHours = async (req, res, next) => {
     const allDay = req.body.date.allDay;
     const tchId = req.body.tchId;
 
+    const find_free_hours = await FreeHours.findOne({
+      where: {
+        start_time: start,
+        end_time: end,
+        teacherId: parseInt(tchId),
+      },
+    });
+    if (find_free_hours) {
+      return res.status(400).json("มีข้อมูลนี้อยู่แล้ว");
+    }
     const free_hours_create = await FreeHours.create({
       title: title,
       start_time: start,
@@ -55,37 +65,6 @@ exports.addHours = async (req, res, next) => {
       include: [Teacher],
     });
 
-    // console.log("data free_hours create", free_hours);
-    // console.log(free_hours.start_time);
-    // console.log(free_hours.end_time);
-    // const startTime = dayjs(free_hours.start_time)
-    //   .utc()
-    //   .add(7, "hours")
-    //   .locale("th")
-    //   .format("YYYY-MM-DD HH:mm:ss");
-    // const endTime = dayjs(free_hours.end_time)
-    //   .utc()
-    //   .add(7, "hours")
-    //   .locale("th")
-    //   .format("YYYY-MM-DD HH:mm:ss");
-    // free_hours.setDataValue("start_time", startTime);
-    // free_hours.setDataValue("end_time", endTime);
-
-    // function isBool(val) {
-    //   if (val == 1) {
-    //     return true;
-    //   }
-    //   return false;
-    // }
-
-    // const resDta = {
-    //   id: parseInt(free_hours.id),
-    //   start: startTime,
-    //   end: endTime,
-    //   title: free_hours.title,
-    //   allDay: isBool(free_hours.allDay),
-    //   teacher: free_hours.teacher,
-    // };
     console.log(free_hours);
     return res.status(200).json(free_hours);
   } catch (err) {
@@ -260,12 +239,13 @@ exports.getEventOnlyGroup = async (req, res) => {
   try {
     const grpId = parseInt(req.params.grpId);
     console.log(grpId);
-    const sql = `SELECT free_hours.*,teachers.* FROM project_mgmt.free_hours INNER JOIN teachers ON free_hours.teacherId = teachers.id INNER JOIN boards ON teachers.id = boards.teacherId INNER JOIN \`groups\` ON boards.groupId = \`groups\`.id WHERE \`groups\`.id = ${parseInt(
+    const sql = `SELECT free_hours.id as fh_id ,free_hours.title, free_hours.start_time,free_hours.end_time,free_hours.isBooked,free_hours.teacherId,teachers.* FROM project_mgmt.free_hours INNER JOIN teachers ON free_hours.teacherId = teachers.id INNER JOIN boards ON teachers.id = boards.teacherId INNER JOIN \`groups\` ON boards.groupId = \`groups\`.id WHERE \`groups\`.id = ${parseInt(
       grpId
-    )} ;`; //AND isBooked = false อย่าลืมเพิ่มอันนี้
+    )}  AND (isBooked = false OR isBooked IS NULL)`; //AND isBooked = false อย่าลืมเพิ่มอันนี้
 
     const events = await sequelize.query(sql);
     const eventsList = [];
+    console.log("events : ", events[0]);
     for (const event of events[0]) {
       const startTime = dayjs(event.start_time)
         .utc()
@@ -285,7 +265,7 @@ exports.getEventOnlyGroup = async (req, res) => {
         title: event.title,
         allDay: isBool(event.allDay),
         teacher: {
-          eventId: event.id,
+          eventId: event.fh_id,
           id: event.teacherId,
           firstname: event.firstname,
           lastname: event.lastname,

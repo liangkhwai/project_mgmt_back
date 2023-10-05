@@ -35,7 +35,7 @@ exports.list = async (req, res, next) => {
     result = { ...result, countStatus: countStatus.map((item) => item.count) };
 
     const sqlCountAdvisor =
-      "SELECT firstname,lastname,tel, COALESCE(COUNT(boards.id), 0) AS advisor_count FROM teachers LEFT JOIN boards ON teachers.id = boards.teacherId AND boards.role = 'advisor' GROUP BY teachers.id";
+      "SELECT t.firstname, t.lastname, t.tel, COALESCE(COUNT(a.id), 0) AS advisor_count, COALESCE(COUNT(b1.id), 0) AS board1_count, COALESCE(COUNT(b2.id), 0) AS board2_count FROM teachers t LEFT JOIN boards a ON t.id = a.teacherId AND a.role = 'advisor' LEFT JOIN boards b1 ON t.id = b1.teacherId AND b1.role = 'board1' LEFT JOIN boards b2 ON t.id = b2.teacherId AND b2.role = 'board2' GROUP BY t.id, t.firstname, t.lastname, t.tel; ";
     const countAdvisor = await Group.sequelize.query(sqlCountAdvisor, {
       type: Group.sequelize.QueryTypes.SELECT,
     });

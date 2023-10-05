@@ -15,10 +15,8 @@ exports.login = async (req, res, next) => {
         return res.status(404).json("user not found");
       }
       loadedUser = researcher;
-      // console.log(researcher)
 
       return await bcrypt.compare(password, loadedUser.pwd.toString());
-      // return true;
     })
     .then((isEqual) => {
       if (!isEqual) {
@@ -37,13 +35,11 @@ exports.login = async (req, res, next) => {
           expiresIn: "5d",
         }
       );
-      // res.json({message:"success"})
-      console.log(loadedUser);
       return res
         .status(200)
         .cookie("token", token, {
           httpOnly: true,
-          maxAge: 7 * 24 * 60 * 60 * 1000, // 1 hour
+          maxAge: 7 * 24 * 60 * 60 * 1000, 
         })
         .json({
           token: token,
@@ -61,17 +57,13 @@ exports.login = async (req, res, next) => {
 };
 
 exports.loginTch = async (req, res, next) => {
-  console.log("tchLogged");
   const email = req.body.email;
   const password = req.body.pwd;
-  console.log(req.body);
   let loadedUser;
 
   await Teacher.findOne({ where: { email: email } })
     .then(async (teacher) => {
       if (!teacher) {
-        console.log("not found");
-        // return res.status(404).json("user not found");
 
         await Admin.findOne({ where: { email: email } })
           .then(async (admin) => {
@@ -104,7 +96,7 @@ exports.loginTch = async (req, res, next) => {
               .status(200)
               .cookie("token", token, {
                 httpOnly: true,
-                maxAge: 7 * 24 * 60 * 60 * 1000, // 1 hour
+                maxAge: 7 * 24 * 60 * 60 * 1000, 
               })
               .json({
                 token: token,
@@ -116,35 +108,22 @@ exports.loginTch = async (req, res, next) => {
           });
       }
       loadedUser = teacher;
-      // console.log(researcher)
-      console.log(loadedUser);
-      console.log(typeof password, typeof loadedUser.pwd);
-      console.log(password, loadedUser.pwd);
       const pwdCompare = await bcrypt.compare(password, loadedUser.pwd);
       return { pwdCompare, teacher };
-      // return true
     })
     .then((isEqual) => {
-      console.log("in");
-      console.log(isEqual);
-      console.log("out");
       if (!isEqual.pwdCompare) {
         const error = new Error("Wrong password");
         error.statuscode = 401;
         return res.status(401).json(error);
       }
-      console.log(isEqual.teacher.dataValues.isAdmin);
 
-      console.log("pass compare");
       let isAdmin = false;
 
       if (isEqual.teacher.dataValues.isAdmin === true) {
         isAdmin = true;
       }
-      // console.log(isEqual.teacher.teacher.dataValues);
 
-      console.log(isAdmin);
-      console.log("pass admin check");
       const token = jwt.sign(
         {
           email: loadedUser.email,
@@ -156,12 +135,11 @@ exports.loginTch = async (req, res, next) => {
           expiresIn: "5d",
         }
       );
-      // res.json({message:"success"})
       return res
         .status(200)
         .cookie("token", token, {
           httpOnly: true,
-          maxAge: 7 * 24 * 60 * 60 * 1000, // 1 hour
+          maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .json({
           token: token,
@@ -206,16 +184,7 @@ exports.check = async (req, res, next) => {
       return res.status(501).json("No role for account");
     }
 
-    // userData = await Researcher.findOne({
-    //   where: { id: parseInt(userId) },
-    //   include: Categories,
-    // });
-    // if (userRole === "teacher") {
-    //   userData = await Teacher.findOne({
-    //     where: { id: parseInt(userId) },
-    //   });
-    // }
-    // console.log(userData);
+    
     return res
       .status(200)
       .json({ isAuth: true, userData: userData, userRole: userRole });

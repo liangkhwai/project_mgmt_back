@@ -89,49 +89,6 @@ exports.getRequest = async (req, res, next) => {
   }
 };
 
-// NOT OPTIMIZE
-// exports.getRequest = async (req, res, next) => {
-//   try {
-//     const token = req.cookies.token;
-//     const check = await checkToken(token);
-//     if (!check) {
-//       res.status(401).json("invalid token or unavalible token");
-//     }
-
-//     console.log(req.body);
-//     const tchId = parseInt(req.body.tchId);
-//     try {
-//       const sql = `SELECT exam_requests.*,\`groups\`.title FROM exam_requests
-//       INNER JOIN \`groups\` ON exam_requests.groupId = \`groups\`.id
-//       INNER JOIN boards ON \`groups\`.id = boards.groupId
-//       INNER JOIN teachers ON boards.teacherId = teachers.id
-//       WHERE boards.role = 'advisor' AND teachers.id = ${tchId};
-//     `;
-//       const getRequest = await sequelize.query(sql);
-//       console.log(getRequest[0]);
-//       let resRequest = [];
-//       for (const request of getRequest[0]) {
-//         console.log(request);
-//         const files = await Exam_requests_files.findAll({
-//           where: { examRequestId: parseInt(request.id) },
-//         });
-//         const dummy = { ...request, files };
-//         console.log(dummy);
-//         console.log(request);
-//         resRequest.push(dummy);
-//       }
-
-//       return res.status(200).json(resRequest);
-//     } catch (er) {
-//       console.log(er);
-//       return res.status(500).json(er);
-//     }
-//   } catch (er) {
-//     console.log(er);
-//     return res.status(500).json(er);
-//   }
-// };
-
 exports.getRequestGroup = async (req, res, next) => {
   try {
     const grpId = req.params.grpId;

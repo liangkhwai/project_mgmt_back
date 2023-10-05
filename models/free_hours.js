@@ -24,7 +24,8 @@ const Free_hours = sequelize.define("free_hours", {
   },
   isBooked: {
     type: Sequelize.BOOLEAN,
-    allowNull: true,
+    // allowNull: true,
+    defaultValue: false,
   },
 });
 

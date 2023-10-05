@@ -16,7 +16,7 @@ const Group = sequelize.define("group", {
   status: {
     type: Sequelize.STRING,
     // allowNull: true,
-    defaultValue: "ยังไม่ยื่นสอบหัวข้อ"
+    defaultValue: "ยังไม่ยื่นเสนอหัวข้อ"
   },
   isApproveTitle: {
     type: Sequelize.BOOLEAN,

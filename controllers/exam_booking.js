@@ -5,7 +5,28 @@ const sequelize = require("../db");
 exports.booking = async (req, res, next) => {
   try {
     const eventList = req.body;
-    console.log(eventList);
+    console.log("booking is :",eventList);
+
+    const find_booking_dupe_time = await Exam_booking.findOne({
+      where: {
+        start_time: eventList.start,
+        end_time: eventList.end,
+        isResult: null
+      },
+    });
+    if (find_booking_dupe_time) {
+      return res.status(400).json("มีกลุ่มอื่นจองเวลาขึ้นสอบนี้อยู่แล้ว");
+    }
+    const find_free_hours = await Free_hours.findOne({
+      where: {
+        start_time: eventList.start,
+        end_time: eventList.end,
+      },
+    });
+
+    if (find_free_hours.isBooked) {
+      return res.status(400).json("มีการจองเวลาขึ้นสอบนี้อยู่แล้ว");
+    }
 
     const updateFreeHours = await Free_hours.update(
       {
