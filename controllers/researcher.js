@@ -306,3 +306,28 @@ exports.updateGradeProject = async (req, res, next) => {
     return res.status(500).json(err);
   }
 };
+
+exports.getResearcherById = async (req, res, next) => {
+  try {
+    const rshId = req.params.rshId;
+    const researcher = await Researcher.findOne({ where: { id: rshId } });
+    return res.status(200).json(researcher);
+  } catch (er) {
+    console.log(er);
+    return res.status(500).json(er);
+  }
+};
+
+exports.getResearcherById = async (req, res, next) => {
+  try {
+    const rshId = req.params.rshId;
+    const researcher = await Researcher.findOne({
+      where: { id: rshId },
+      include: [Group, Categorie_room],
+    });
+    return res.status(200).json(researcher);
+  } catch (er) {
+    console.log(er);
+    return res.status(500).json(er);
+  }
+};

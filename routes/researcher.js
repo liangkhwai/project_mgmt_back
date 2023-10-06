@@ -19,6 +19,7 @@ router.post("/delete", researcherController.deLete);
 router.get("/getOne", researcherController.getOne);
 router.get("/getGroupList/:grpId", researcherController.getGroupList);
 router.put('/updateGradePro',researcherController.updateGradeProject)
+router.get('/get/:rshId',researcherController.getResearcherById)
 module.exports = router;
 
 

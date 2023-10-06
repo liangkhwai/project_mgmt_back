@@ -11,4 +11,7 @@ router.get("/check", authController.check);
 
 router.get("/logout", authController.logout);
 
+router.get("/check/role", authController.checkRole);
+router.post("/change/password", authController.changePassword);
+
 module.exports = router;

@@ -3,6 +3,8 @@ const express = require("express");
 const teacherController = require("../controllers/teacher");
 const router = express.Router();
 
+router.get('/get/:tchId', teacherController.getTeacherById)
+
 router.get("/list", teacherController.getList);
 
 router.put("/update", teacherController.upDate);

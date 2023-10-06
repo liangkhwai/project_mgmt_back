@@ -244,7 +244,9 @@ exports.lineNotify = async (req, res, next) => {
                                   type: "text",
                                   text: `อาจารย์${
                                     item.role === "advisor" ? "ที่ปรึกษา" : ""
-                                  } ${item.prefix ? item.prefix : ""}${item.firstname} ${item.lastname}`,
+                                  } ${item.prefix ? item.prefix : ""}${
+                                    item.firstname
+                                  } ${item.lastname}`,
                                   size: "xs",
                                 },
                               ],
@@ -372,3 +374,11 @@ exports.lineNotify = async (req, res, next) => {
   }
 };
 
+exports.getTeacherById = async (req, res, next) => {
+  try {
+    const teacher = await Teachers.findOne({ where: { id: req.params.tchId } });
+    return res.status(200).json(teacher);
+  } catch (er) {
+    return res.status(500).json(er);
+  }
+};

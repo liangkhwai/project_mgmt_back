@@ -4,6 +4,7 @@ const Admin = require("../models/admin");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Teacher = require("../models/teacher");
+const Group = require("../models/group");
 exports.login = async (req, res, next) => {
   const id = req.body.id;
   const password = req.body.password;
@@ -39,7 +40,7 @@ exports.login = async (req, res, next) => {
         .status(200)
         .cookie("token", token, {
           httpOnly: true,
-          maxAge: 7 * 24 * 60 * 60 * 1000, 
+          maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .json({
           token: token,
@@ -64,7 +65,6 @@ exports.loginTch = async (req, res, next) => {
   await Teacher.findOne({ where: { email: email } })
     .then(async (teacher) => {
       if (!teacher) {
-
         await Admin.findOne({ where: { email: email } })
           .then(async (admin) => {
             if (!admin) {
@@ -96,7 +96,7 @@ exports.loginTch = async (req, res, next) => {
               .status(200)
               .cookie("token", token, {
                 httpOnly: true,
-                maxAge: 7 * 24 * 60 * 60 * 1000, 
+                maxAge: 7 * 24 * 60 * 60 * 1000,
               })
               .json({
                 token: token,
@@ -184,7 +184,6 @@ exports.check = async (req, res, next) => {
       return res.status(501).json("No role for account");
     }
 
-    
     return res
       .status(200)
       .json({ isAuth: true, userData: userData, userRole: userRole });
@@ -199,4 +198,117 @@ exports.check = async (req, res, next) => {
 exports.logout = async (req, res, nect) => {
   res.clearCookie("token", { httpOnly: true });
   res.json({ message: "cookie cleared" });
+};
+
+exports.checkRole = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json("Unauthorized : No token provided");
+    }
+    const decoded = jwt.verify(token, "soybad");
+    const userId = decoded.userId;
+    const userRole = decoded.role;
+    if (userRole === "admin") {
+      const admin = await Admin.findOne({ where: { id: userId } });
+
+      return res.status(200).json({ isAuth: true, role: "admin", data: admin });
+    } else if (userRole === "researcher") {
+      const researcher = await Researcher.findOne({
+        where: { id: userId },
+        include: [Group, Categories],
+      });
+      return res
+        .status(200)
+        .json({ isAuth: true, role: "researcher", data: researcher });
+    } else {
+      const teacher = await Teacher.findOne({ where: { id: userId } });
+      return res
+        .status(200)
+        .json({ isAuth: true, role: "teacher", data: teacher });
+    }
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+};
+
+exports.changePassword = async (req, res, next) => {
+  const id = req.body.id;
+  const oldPassword = req.body.oldPassword;
+  const newPassword = req.body.newPassword;
+  const role = req.body.role;
+  let loadedUser;
+  if (role === "researcher") {
+    await Researcher.findOne({ where: { id: id } })
+      .then(async (researcher) => {
+        if (!researcher) {
+          return res.status(404).json("user not found");
+        }
+        loadedUser = researcher;
+
+        return await bcrypt.compare(oldPassword, loadedUser.pwd.toString());
+      })
+      .then(async (isEqual) => {
+        if (!isEqual) {
+          const error = new Error("Wrong password");
+          error.statuscode = 401;
+          return res.status(401).json(error);
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        loadedUser.pwd = hashedPassword;
+        await loadedUser.save();
+        return res.status(200).json("success");
+      })
+      .catch((err) => {
+        return err;
+      });
+  } else if (role === "teacher") {
+    await Teacher.findOne({ where: { id: id } })
+      .then(async (teacher) => {
+        if (!teacher) {
+          return res.status(404).json("user not found");
+        }
+        loadedUser = teacher;
+
+        return await bcrypt.compare(oldPassword, loadedUser.pwd.toString());
+      })
+      .then(async (isEqual) => {
+        if (!isEqual) {
+          const error = new Error("Wrong password");
+          error.statuscode = 401;
+          return res.status(401).json(error);
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        loadedUser.pwd = hashedPassword;
+        await loadedUser.save();
+        return res.status(200).json("success");
+      })
+      .catch((err) => {
+        return err;
+      });
+  } else {
+    await Admin.findOne({ where: { id: id } })
+      .then(async (admin) => {
+        if (!admin) {
+          return res.status(404).json("user not found");
+        }
+        loadedUser = admin;
+
+        return await bcrypt.compare(oldPassword, loadedUser.pwd.toString());
+      })
+      .then(async (isEqual) => {
+        if (!isEqual) {
+          const error = new Error("Wrong password");
+          error.statuscode = 401;
+          return res.status(401).json(error);
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        loadedUser.pwd = hashedPassword;
+        await loadedUser.save();
+        return res.status(200).json("success");
+      })
+      .catch((err) => {
+        return err;
+      });
+  }
 };
