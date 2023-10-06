@@ -52,7 +52,7 @@ exports.addHours = async (req, res, next) => {
       return res.status(400).json("มีข้อมูลนี้อยู่แล้ว");
     }
     const free_hours_create = await FreeHours.create({
-      title: title,
+      title: title ? title : "ว่าง",
       start_time: start,
       end_time: end,
       allDay: allDay,
@@ -218,7 +218,7 @@ exports.getAllEvents = async (req, res, next) => {
         .locale("th")
         .format("YYYY-MM-DD HH:mm:ss");
 
-      let data = {
+      let data = {...event.dataValues,
         id: parseInt(event.id),
         start: dayjs(startTime).$d,
         end: dayjs(endTime).$d,

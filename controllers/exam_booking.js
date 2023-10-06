@@ -30,6 +30,7 @@ exports.booking = async (req, res, next) => {
 
     const updateFreeHours = await Free_hours.update(
       {
+        title:"มีการจองแล้ว",
         isBooked: true,
       },
       { where: { id: eventList.eventId.map((item) => parseInt(item)) } }

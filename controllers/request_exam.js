@@ -60,7 +60,7 @@ exports.getRequest = async (req, res, next) => {
       INNER JOIN \`groups\` ON exam_requests.groupId = \`groups\`.id 
       INNER JOIN boards ON \`groups\`.id = boards.groupId 
       INNER JOIN teachers ON boards.teacherId = teachers.id 
-      WHERE boards.role = 'advisor' AND teachers.id = :tchId;
+      WHERE boards.role = 'advisor' AND teachers.id = :tchId ORDER BY updatedAt DESC;
     `;
 
     try {

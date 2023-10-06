@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.get("/list", resultController.getList);
 
-router.post('/submit', resultController.submitResult)
+router.post("/submit", resultController.submitResult);
+router.get("/log", resultController.log);
 module.exports = router;

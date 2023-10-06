@@ -80,3 +80,17 @@ exports.submitResult = async (req, res, next) => {
     return res.status(500).json(err);
   }
 };
+
+exports.log = async (req, res, next) => {
+  try {
+    const sql =
+      "SELECT exam_results.*,`groups`.title,exam_requests.`status`,exam_requests.categories,exam_bookings.start_time,exam_bookings.end_time FROM project_mgmt.exam_results INNER JOIN exam_requests ON exam_requests.id = exam_results.examRequestId INNER JOIN `groups` ON `groups`.id = exam_requests.groupId INNER JOIN exam_bookings ON exam_bookings.id = exam_results.examBookingId ORDER BY createdAt DESC";
+
+    const result = await sequelize.query(sql);
+
+    return res.status(200).json(result[0]);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};

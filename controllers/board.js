@@ -99,7 +99,7 @@ exports.addRandom = async (req, res, next) => {
   }
 };
 exports.addRandomManual = async (req, res, next) => {
-  const { grp } = req.body; 
+  const { grp } = req.body;
   console.log(grp);
   try {
     // Start a transaction
@@ -211,6 +211,21 @@ exports.updateBoard = async (req, res, next) => {
     const updatedBoard = await sequelize.query(sql);
     console.log(updatedBoard[0]);
     return res.status(200).json(updatedBoard[0]);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.getInfo = async (req, res, next) => {
+  try {
+    const sqlCountAdvisor =
+      "SELECT t.firstname, t.lastname, t.tel, COALESCE(COUNT(a.id), 0) AS advisor_count, COALESCE(COUNT(b1.id), 0) AS board1_count, COALESCE(COUNT(b2.id), 0) AS board2_count FROM teachers t LEFT JOIN boards a ON t.id = a.teacherId AND a.role = 'advisor' LEFT JOIN boards b1 ON t.id = b1.teacherId AND b1.role = 'board1' LEFT JOIN boards b2 ON t.id = b2.teacherId AND b2.role = 'board2' GROUP BY t.id, t.firstname, t.lastname, t.tel; ";
+    const countAdvisor = await Group.sequelize.query(sqlCountAdvisor, {
+      type: Group.sequelize.QueryTypes.SELECT,
+    });
+
+    return res.status(200).json(countAdvisor);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
