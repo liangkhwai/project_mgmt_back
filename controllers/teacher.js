@@ -7,6 +7,7 @@ const dayjs = require("dayjs");
 const Researcher = require("../models/researcher");
 const Categorie_room = require("../models/categorie_room");
 const Board = require("../models/board");
+const Exam_requests_files = require("../models/exam_requests_files");
 exports.getList = async (req, res, next) => {
   try {
     const token = req.cookies.token;
@@ -168,6 +169,7 @@ exports.lineNotify = async (req, res, next) => {
     const teacher_id = req.body.teacher_id;
     const event = req.body.event;
     const groupInfo = req.body.groupInfo;
+    const requestId = req.body.event.requestId.id;
 
     // const boards = await Board.findAll({
     //   where: {
@@ -177,6 +179,12 @@ exports.lineNotify = async (req, res, next) => {
     //     },
     //   },
     // });
+
+    const fileEvent = await Exam_requests_files.findAll({
+      where: {
+        examRequestId: requestId,
+      },
+    });
 
     const getBoards = await fetch(
       `http://localhost:8080/boards/get/${groupInfo.id}`,
@@ -360,6 +368,15 @@ exports.lineNotify = async (req, res, next) => {
                 },
               },
             },
+            fileEvent.length > 0 &&
+              fileEvent.map((item) => {
+                return {
+                  type: "file",
+                  originalContentUrl: `https://9958-2403-6200-8837-846d-b5d0-5dd8-ad2a-ba57.ngrok-free.app/files/upload/${item.originalname}`,
+                  previewImageUrl:
+                    "https://race.nstru.ac.th/home_ex/blog/pic/cover/s6640.jpg", // URL to a preview image
+                };
+              }),
           ],
         }),
       }
