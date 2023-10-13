@@ -17,12 +17,14 @@ exports.request = async (req, res, next) => {
     const category = req.body.category;
     const description = req.body.description;
     const grpId = req.body.grpId;
+    const rate_url = req.body.rate_url;
 
     const exam_request = await Exam_requests.create({
       categories: category,
       description: description,
       status: "รอการอนุมัติ",
       groupId: parseInt(grpId),
+      rate_url: rate_url,
     });
 
     files.forEach(async (file) => {

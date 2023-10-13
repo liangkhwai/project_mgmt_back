@@ -17,6 +17,10 @@ const Exam_booking = sequelize.define("exam_booking", {
     type: Sequelize.DATE,
     allowNull: true,
   },
+  location: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
   isResult: {
     type: Sequelize.BOOLEAN,
     allowNull: true,

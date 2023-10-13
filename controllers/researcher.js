@@ -331,3 +331,17 @@ exports.getResearcherById = async (req, res, next) => {
     return res.status(500).json(er);
   }
 };
+
+exports.testGetResearcher = async (req, res, next) => {
+  try {
+    const researcherFromRoom = await Researcher.findAll({
+      where: { categorieRoomId: 2 },
+      include: [Group, Categorie_room],
+    });
+    console.log(researcherFromRoom);
+    return res.status(200).json(researcherFromRoom);
+
+  } catch {
+    return res.status(401);
+  }
+};    

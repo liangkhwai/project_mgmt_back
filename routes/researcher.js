@@ -20,6 +20,7 @@ router.get("/getOne", researcherController.getOne);
 router.get("/getGroupList/:grpId", researcherController.getGroupList);
 router.put('/updateGradePro',researcherController.updateGradeProject)
 router.get('/get/:rshId',researcherController.getResearcherById)
+router.get("/EIEI", researcherController.testGetResearcher);
 module.exports = router;
 
 

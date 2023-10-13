@@ -6,8 +6,8 @@ const bcrypt = require("bcrypt");
 const Teacher = require("../models/teacher");
 const Group = require("../models/group");
 exports.login = async (req, res, next) => {
-  const id = req.body.id;
-  const password = req.body.password;
+  const id = req.body.id.trim();
+  const password = req.body.password.trim();
   let loadedUser;
 
   await Researcher.findOne({ where: { student_id: id, isActive: true } })
@@ -58,8 +58,8 @@ exports.login = async (req, res, next) => {
 };
 
 exports.loginTch = async (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.pwd;
+  const email = req.body.email.trim();
+  const password = req.body.pwd.trim();
   let loadedUser;
 
   await Teacher.findOne({ where: { email: email } })
@@ -236,6 +236,7 @@ exports.changePassword = async (req, res, next) => {
   const id = req.body.id;
   const oldPassword = req.body.oldPassword;
   const newPassword = req.body.newPassword;
+  
   const role = req.body.role;
   let loadedUser;
   if (role === "researcher") {

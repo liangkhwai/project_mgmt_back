@@ -11,22 +11,24 @@ const Exam_requests = sequelize.define("exam_requests", {
   },
   status: {
     type: Sequelize.STRING,
-    allowNull:true
+    allowNull: true,
   },
-  isApprove:{
-    type :Sequelize.BOOLEAN,
-    allowNull:true
-  }
-  ,
+  isApprove: {
+    type: Sequelize.BOOLEAN,
+    allowNull: true,
+  },
   categories: {
     type: Sequelize.STRING,
-    allowNull:true
+    allowNull: true,
   },
   description: {
     type: Sequelize.STRING,
-    allowNull:true
+    allowNull: true,
   },
- 
+  rate_url: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
 });
 
 module.exports = Exam_requests;
