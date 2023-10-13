@@ -199,7 +199,8 @@ exports.lineNotify = async (req, res, next) => {
       include: Categorie_room,
     });
     // console.log(researcher);
-    console.log("HI",
+    console.log(
+      "HI",
       boards.flatMap((item) =>
         item ? (item.line_id ? item.line_id : null) : []
       )
@@ -340,6 +341,29 @@ exports.lineNotify = async (req, res, next) => {
                           margin: "xs",
                         },
                         {
+                          type: "box",
+                          layout: "baseline",
+                          spacing: "none",
+                          contents: [
+                            {
+                              type: "text",
+                              text: "สถานที่สอบ:",
+                              weight: "bold",
+                              size: "sm",
+                            },
+                            {
+                              type: "text",
+                              text: `${event.location}`,
+                              wrap: true,
+                              flex: 2,
+                              contents: [],
+                              weight: "bold",
+                              size: "sm",
+                            },
+                          ],
+                          margin: "xs",
+                        },
+                        {
                           type: "text",
                           text: "จัดทำโดย",
                           size: "xs",
@@ -371,15 +395,14 @@ exports.lineNotify = async (req, res, next) => {
                   ],
                 },
               },
-            }
+            },
           ],
         }),
       }
-    )
+    );
     console.log(sendNotify);
-    
-      // console.log(sendNotify);
-    
+
+    // console.log(sendNotify);
 
     return res.status(200).json("success");
   } catch (er) {

@@ -209,10 +209,25 @@ exports.checkRole = async (req, res, next) => {
     const decoded = jwt.verify(token, "soybad");
     const userId = decoded.userId;
     const userRole = decoded.role;
+    console.log(decoded);
     if (userRole === "admin") {
       const admin = await Admin.findOne({ where: { id: userId } });
-
-      return res.status(200).json({ isAuth: true, role: "admin", data: admin });
+      if (admin) {
+        return res
+          .status(200)
+          .json({ isAuth: true, role: "admin", data: admin });
+      } else {
+        const teacherAdmin = await Teacher.findOne({
+          where: { id: userId, isAdmin: true },
+        });
+        if (teacherAdmin) {
+          return res
+            .status(200)
+            .json({ isAuth: true, role: "admin", data: teacherAdmin });
+        } else {
+          return res.status(200).json({ isAuth: false });
+        }
+      }
     } else if (userRole === "researcher") {
       const researcher = await Researcher.findOne({
         where: { id: userId },
@@ -236,7 +251,8 @@ exports.changePassword = async (req, res, next) => {
   const id = req.body.id;
   const oldPassword = req.body.oldPassword;
   const newPassword = req.body.newPassword;
-  
+  console.log(req.body);
+
   const role = req.body.role;
   let loadedUser;
   if (role === "researcher") {
@@ -288,28 +304,57 @@ exports.changePassword = async (req, res, next) => {
         return err;
       });
   } else {
-    await Admin.findOne({ where: { id: id } })
-      .then(async (admin) => {
-        if (!admin) {
-          return res.status(404).json("user not found");
-        }
-        loadedUser = admin;
+    console.log("admin na");
+    const admin = await Admin.findOne({ where: { id: id } });
+    if (admin) {
+      await Admin.findOne({ where: { id: id } })
+        .then(async (admin) => {
+          if (!admin) {
+            return res.status(404).json("user not found");
+          }
+          loadedUser = admin;
 
-        return await bcrypt.compare(oldPassword, loadedUser.pwd.toString());
-      })
-      .then(async (isEqual) => {
-        if (!isEqual) {
-          const error = new Error("Wrong password");
-          error.statuscode = 401;
-          return res.status(401).json(error);
-        }
-        const hashedPassword = await bcrypt.hash(newPassword, 12);
-        loadedUser.pwd = hashedPassword;
-        await loadedUser.save();
-        return res.status(200).json("success");
-      })
-      .catch((err) => {
-        return err;
-      });
+          return await bcrypt.compare(oldPassword, loadedUser.pwd.toString());
+        })
+        .then(async (isEqual) => {
+          if (!isEqual) {
+            const error = new Error("Wrong password");
+            error.statuscode = 401;
+            return res.status(401).json(error);
+          }
+          const hashedPassword = await bcrypt.hash(newPassword, 12);
+          loadedUser.pwd = hashedPassword;
+          await loadedUser.save();
+          return res.status(200).json("success");
+        })
+        .catch((err) => {
+          return err;
+        });
+    } else {
+      console.log("not found admin but teacher");
+      await Teacher.findOne({ where: { id: id, isAdmin: true } })
+        .then(async (admin) => {
+          if (!admin) {
+            return res.status(404).json("user not found");
+          }
+          loadedUser = admin;
+
+          return await bcrypt.compare(oldPassword, loadedUser.pwd.toString());
+        })
+        .then(async (isEqual) => {
+          if (!isEqual) {
+            const error = new Error("Wrong password");
+            error.statuscode = 401;
+            return res.status(401).json(error);
+          }
+          const hashedPassword = await bcrypt.hash(newPassword, 12);
+          loadedUser.pwd = hashedPassword;
+          await loadedUser.save();
+          return res.status(200).json("success");
+        })
+        .catch((err) => {
+          return err;
+        });
+    }
   }
 };
