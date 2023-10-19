@@ -74,18 +74,21 @@ exports.login = async (req, res, next) => {
     if (!isEqual) {
       return res.status(401).json("Wrong password");
     }
-
-    const token = jwt.sign(
-      {
-        email: researcher.email,
-        userId: researcher.id.toString(),
-        role: "researcher",
-      },
-      "soybad",
-      {
-        expiresIn: "5d",
-      }
-    );
+    try {
+      const token = jwt.sign(
+        {
+          email: researcher.email.toString(),
+          userId: researcher.id.toString(),
+          role: "researcher",
+        },
+        "soybad",
+        {
+          expiresIn: "5d",
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
     res
       .status(200)
       .cookie("token", token, {
