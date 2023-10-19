@@ -86,7 +86,7 @@ exports.login = async (req, res, next) => {
         expiresIn: "5d",
       }
     );
-    return res
+    res
       .status(200)
       .cookie("token", token, {
         httpOnly: true,
@@ -102,6 +102,7 @@ exports.login = async (req, res, next) => {
         role: "researcher",
       });
   } catch (error) {
+    console.log(error);
     return res.status(401).json(error);
   }
 };
