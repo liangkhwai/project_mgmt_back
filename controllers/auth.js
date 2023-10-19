@@ -88,22 +88,27 @@ exports.login = async (req, res, next) => {
         }
       );
       console.log(token);
-      res.cookie("token", token, {
-        // httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        // sameSite: "None",
-      });
-      
+      // res.cookie("token", token, {
+      //   // httpOnly: true,
+      //   maxAge: 7 * 24 * 60 * 60 * 1000,
+      //   // sameSite: "None",
+      // });
 
-      return res.status(200).json({
-        token: token,
-        userId: researcher.id.toString(),
-        userName: researcher.firstname,
-        status: 200,
-        grpId: researcher.groupId,
-        userData: researcher,
-        role: "researcher",
-      });
+      return res
+        .status(200)
+        .cookie("token", token, {
+          // httpOnly: true,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+        .json({
+          token: token,
+          userId: researcher.id.toString(),
+          userName: researcher.firstname,
+          status: 200,
+          grpId: researcher.groupId,
+          userData: researcher,
+          role: "researcher",
+        });
     } catch (err) {
       console.log(err);
     }
