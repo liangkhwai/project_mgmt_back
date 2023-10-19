@@ -76,27 +76,27 @@ exports.login = async (req, res, next) => {
     }
     try {
       console.log(researcher)
-      const token = jwt.sign(
-        {
-          email: researcher.dataValues.email.toString(),
-          userId: researcher.dataValues.id.toString(),
-          role: "researcher",
-        },
-        "soybad",
-        {
-          expiresIn: "5d",
-        }
-      );
-      console.log(token)
+      // const token = jwt.sign(
+      //   {
+      //     email: researcher.dataValues.email.toString(),
+      //     userId: researcher.dataValues.id.toString(),
+      //     role: "researcher",
+      //   },
+      //   "soybad",
+      //   {
+      //     expiresIn: "5d",
+      //   }
+      // );
+      // console.log(token)
 
       res
         .status(200)
-        .cookie("token", token, {
+        .cookie("token", "token", {
           httpOnly: true,
           maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .json({
-          token: token,
+          // token: token,
           userId: researcher.id.toString(),
           userName: researcher.firstname,
           status: 200,
