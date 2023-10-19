@@ -37,7 +37,7 @@ const Exam_requests_files = require("./models/exam_requests_files");
 const app = express();
 const corsOptions = {
   origin: "http://34.126.124.142:3000",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTION"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: true,
   // allowedHeaders: ['Content-Type', 'Authorization']
 };
