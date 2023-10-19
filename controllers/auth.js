@@ -75,7 +75,7 @@ exports.login = async (req, res, next) => {
       return res.status(401).json("Wrong password");
     }
     try {
-      console.log(researcher)
+      console.log(researcher);
       const token = jwt.sign(
         {
           email: researcher.email,
@@ -87,9 +87,9 @@ exports.login = async (req, res, next) => {
           expiresIn: "5d",
         }
       );
-      console.log(token)
+      console.log(token);
 
-      res
+      return res
         .status(200)
         .cookie("token", token, {
           httpOnly: true,
