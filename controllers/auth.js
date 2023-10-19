@@ -61,7 +61,7 @@ exports.login = async (req, res, next) => {
   const password = req.body.password.trim();
 
   try {
-    const researcher = await Researcher.findOne({
+    let researcher = await Researcher.findOne({
       where: { student_id: id, isActive: true },
     });
 
@@ -87,6 +87,7 @@ exports.login = async (req, res, next) => {
           expiresIn: "5d",
         }
       );
+      console.log(token)
 
       res
         .status(200)
