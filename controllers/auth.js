@@ -75,6 +75,7 @@ exports.login = async (req, res, next) => {
       return res.status(401).json("Wrong password");
     }
     try {
+      console.log(researcher)
       const token = jwt.sign(
         {
           email: researcher.email.toString(),
@@ -86,24 +87,25 @@ exports.login = async (req, res, next) => {
           expiresIn: "5d",
         }
       );
+
+      res
+        .status(200)
+        .cookie("token", token, {
+          httpOnly: true,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+        .json({
+          token: token,
+          userId: researcher.id.toString(),
+          userName: researcher.firstname,
+          status: 200,
+          grpId: researcher.groupId,
+          userData: researcher,
+          role: "researcher",
+        });
     } catch (err) {
       console.log(err);
     }
-    res
-      .status(200)
-      .cookie("token", token, {
-        httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      })
-      .json({
-        token: token,
-        userId: researcher.id.toString(),
-        userName: researcher.firstname,
-        status: 200,
-        grpId: researcher.groupId,
-        userData: researcher,
-        role: "researcher",
-      });
   } catch (error) {
     console.log(error);
     return res.status(401).json(error);
