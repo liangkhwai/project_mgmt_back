@@ -78,8 +78,8 @@ exports.login = async (req, res, next) => {
       console.log(researcher)
       const token = jwt.sign(
         {
-          email: researcher.email.toString(),
-          userId: researcher.id.toString(),
+          email: researcher.dataValues.email.toString(),
+          userId: researcher.dataValues.id.toString(),
           role: "researcher",
         },
         "soybad",
