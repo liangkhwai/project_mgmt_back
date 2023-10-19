@@ -5,56 +5,105 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Teacher = require("../models/teacher");
 const Group = require("../models/group");
+// exports.login = async (req, res, next) => {
+//   const id = req.body.id.trim();
+//   const password = req.body.password.trim();
+//   let loadedUser;
+
+//   await Researcher.findOne({ where: { student_id: id, isActive: true } })
+//     .then(async (researcher) => {
+//       if (!researcher) {
+//         return res.status(404).json("user not found");
+//       }
+//       loadedUser = researcher;
+
+//       return await bcrypt.compare(password, loadedUser.pwd.toString());
+//     })
+//     .then((isEqual) => {
+//       if (!isEqual) {
+//         const error = new Error("Wrong password");
+//         error.statuscode = 401;
+//         return res.status(401).json(error);
+//       }
+//       const token = jwt.sign(
+//         {
+//           email: loadedUser.email,
+//           userId: loadedUser.id.toString(),
+//           role: "researcher",
+//         },
+//         "soybad",
+//         {
+//           expiresIn: "5d",
+//         }
+//       );
+//       return res
+//         .status(200)
+//         .cookie("token", token, {
+//           httpOnly: true,
+//           maxAge: 7 * 24 * 60 * 60 * 1000,
+//         })
+//         .json({
+//           token: token,
+//           userId: loadedUser.id.toString(),
+//           userName: loadedUser.firstname,
+//           status: 200,
+//           grpId: loadedUser.groupId,
+//           userData: loadedUser,
+//           role: "researcher",
+//         });
+//     })
+//     .catch((err) => {
+//       return err;
+//     });
+// };
 exports.login = async (req, res, next) => {
   const id = req.body.id.trim();
   const password = req.body.password.trim();
-  let loadedUser;
 
-  await Researcher.findOne({ where: { student_id: id, isActive: true } })
-    .then(async (researcher) => {
-      if (!researcher) {
-        return res.status(404).json("user not found");
-      }
-      loadedUser = researcher;
-
-      return await bcrypt.compare(password, loadedUser.pwd.toString());
-    })
-    .then((isEqual) => {
-      if (!isEqual) {
-        const error = new Error("Wrong password");
-        error.statuscode = 401;
-        return res.status(401).json(error);
-      }
-      const token = jwt.sign(
-        {
-          email: loadedUser.email,
-          userId: loadedUser.id.toString(),
-          role: "researcher",
-        },
-        "soybad",
-        {
-          expiresIn: "5d",
-        }
-      );
-      return res
-        .status(200)
-        .cookie("token", token, {
-          httpOnly: true,
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        })
-        .json({
-          token: token,
-          userId: loadedUser.id.toString(),
-          userName: loadedUser.firstname,
-          status: 200,
-          grpId: loadedUser.groupId,
-          userData: loadedUser,
-          role: "researcher",
-        });
-    })
-    .catch((err) => {
-      return err;
+  try {
+    const researcher = await Researcher.findOne({
+      where: { student_id: id, isActive: true },
     });
+
+    if (!researcher) {
+      return res.status(404).json("User not found");
+    }
+
+    const isEqual = await bcrypt.compare(password, researcher.pwd.toString());
+
+    if (!isEqual) {
+      return res.status(401).json("Wrong password");
+    }
+
+    const token = jwt.sign(
+      {
+        email: researcher.email,
+        userId: researcher.id.toString(),
+        role: "researcher",
+      },
+      "soybad",
+      {
+        expiresIn: "5d",
+      }
+    );
+    return res
+      .status(200)
+      .cookie("token", token, {
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .json({
+        token: token,
+        userId: researcher.id.toString(),
+        userName: researcher.firstname,
+        status: 200,
+        grpId: researcher.groupId,
+        userData: researcher,
+        role: "researcher",
+      });
+  } catch (error) {
+    return res.status(401).json(error);
+  }
 };
 
 exports.loginTch = async (req, res, next) => {
