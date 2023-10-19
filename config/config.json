@@ -3,7 +3,7 @@
     "username": "root",
     "password": "123456789",
     "database": "project_mgmt",
-    "host": "127.0.0.1",
+    "host": "35.240.186.231",
     "dialect": "mysql"
   },
   "test": {
@@ -15,9 +15,9 @@
   },
   "production": {
     "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "password": "123456789",
+    "database": "project_mgmt",
+    "host": "35.240.186.231",
     "dialect": "mysql"
   }
 }
