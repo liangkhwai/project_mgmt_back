@@ -12,8 +12,8 @@ const Group = require("../models/group");
 
 exports.getOne = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
-    console.log(token);
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       return res.status(401).json("invalid token or unavalible token");
@@ -124,8 +124,8 @@ exports.getListt = async (req, res, next) => {
 exports.upDate = async (req, res, next) => {
   console.log("hi");
   try {
-    const token = req.cookies.token;
-    console.log(token);
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       res.status(401).json("invalid token or unavalible token");
@@ -178,8 +178,8 @@ exports.upDate = async (req, res, next) => {
 exports.inSert = async (req, res, next) => {
   console.log("hi");
   try {
-    const token = req.cookies.token;
-    console.log(token);
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       res.status(401).json("invalid token or unavalible token");
@@ -266,8 +266,8 @@ exports.inSertXlsx = async (req, res, next) => {
 exports.deLete = async (req, res, next) => {
   console.log("delete");
   try {
-    const token = req.cookies.token;
-    console.log(token);
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       res.status(401).json("invalid token or unavalible token");
