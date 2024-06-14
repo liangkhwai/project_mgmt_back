@@ -12,7 +12,8 @@ const sequelize = require("../db.js");
 // const { Op } = require('sequelize/lib/operators');
 
 exports.create = async (req, res, next) => {
-  const token = req.cookies.token;
+  const header = req.headers.authorization;
+  const token = header.split(" ")[1] ? header.split(" ")[1] : null;
   const check = await checkToken(token);
   if (!check) {
     res.status(401).json("invalid token or unavalible token");
@@ -38,7 +39,8 @@ exports.create = async (req, res, next) => {
 
 exports.getGroup = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       res.status(401).json("invalid token or unavalible token");
@@ -60,7 +62,8 @@ exports.getGroup = async (req, res, next) => {
 
 exports.getOneGroup = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check)
       return res.status(401).json("invaldi token or unavalible token");
@@ -78,7 +81,8 @@ exports.getOneGroup = async (req, res, next) => {
 
 exports.getAllGroup = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check)
       return res.status(401).json("invalid token or unavalible token");
@@ -93,7 +97,8 @@ exports.getAllGroup = async (req, res, next) => {
 
 exports.createTitleGroup = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       return res.status(401).json("invalid token or unavalible token");
@@ -121,7 +126,8 @@ exports.createTitleGroup = async (req, res, next) => {
 
 exports.changeGroupTitle = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       return res.status(401).json("invalid token or unavalible token");
@@ -147,7 +153,8 @@ exports.changeGroupTitle = async (req, res, next) => {
 
 exports.removeResearcherFromGroup = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       return res.status(401).json("invalid token or unavalible token");
@@ -175,7 +182,8 @@ exports.removeResearcherFromGroup = async (req, res, next) => {
 
 exports.getGroupMember = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       return res.status(401).json("invalid token or unavalible token");
@@ -199,7 +207,8 @@ exports.getGroupMember = async (req, res, next) => {
 
 exports.addGroupMember = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       return res.status(401).json("invalid token or unavalible token");
@@ -223,7 +232,8 @@ exports.addGroupMember = async (req, res, next) => {
 
 exports.removeGroup = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       return res.status(401).json("invalid token or unavalible token");
@@ -351,7 +361,8 @@ exports.updateGroupInCompleteMember = async (req, res, next) => {
 
 exports.requestGroupTitle = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       return res.status(401).json("invalid token or unavalible token");
