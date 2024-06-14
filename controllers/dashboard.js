@@ -27,12 +27,29 @@ exports.list = async (req, res, next) => {
       countResearcherWithStatusInGroup: researcherWithStatusInGroup.length,
     };
 
-    const sqlCountStatus =
-      "SELECT COALESCE(COUNT(g.status), 0) AS count FROM ( SELECT 'ยังไม่ยื่นสอบหัวข้อ' AS status UNION ALL SELECT 'สอบหัวข้อ' UNION ALL SELECT 'ยังไม่ยื่นสอบก้าวหน้า' UNION ALL SELECT 'สอบก้าวหน้า' UNION ALL SELECT 'ยังไม่ยื่นสอบป้องกัน' UNION ALL SELECT 'สอบป้องกัน' UNION ALL SELECT 'รอส่งปริญญานิพนธ์' UNION ALL SELECT 'ส่งปริญญานิพนธ์แล้ว') AS s LEFT JOIN project_mgmt.groups AS g ON s.status = g.status GROUP BY s.status;";
-    const countStatus = await Group.sequelize.query(sqlCountStatus, {
-      type: Group.sequelize.QueryTypes.SELECT,
-    });
-    result = { ...result, countStatus: countStatus.map((item) => item.count) };
+    // const sqlCountStatus =
+    //   "SELECT COALESCE(COUNT(g.status), 0) AS count FROM ( SELECT 'ยังไม่ยื่นสอบหัวข้อ' AS status UNION ALL SELECT 'สอบหัวข้อ' UNION ALL SELECT 'ยังไม่ยื่นสอบก้าวหน้า' UNION ALL SELECT 'สอบก้าวหน้า' UNION ALL SELECT 'ยังไม่ยื่นสอบป้องกัน' UNION ALL SELECT 'สอบป้องกัน' UNION ALL SELECT 'รอส่งปริญญานิพนธ์' UNION ALL SELECT 'ส่งปริญญานิพนธ์แล้ว') AS s LEFT JOIN project_mgmt.groups AS g ON s.status = g.status GROUP BY s.status;";
+    // const countStatus = await Group.sequelize.query(sqlCountStatus, {
+    //   type: Group.sequelize.QueryTypes.SELECT,
+    // });
+    // result = { ...result, countStatus: countStatus.map((item) => item.count) };
+
+    const label = [ 'ยังไม่ยื่นสอบหัวข้อ', 'สอบหัวข้อ', 'ยังไม่ยื่นสอบก้าวหน้า', 'สอบก้าวหน้า', 'ยังไม่ยื่นสอบป้องกัน', 'สอบป้องกัน', 'รอส่งปริญญานิพนธ์', 'ส่งปริญญานิพนธ์แล้ว' ];
+    const countStatus = [];
+    for (let i = 0; i < label.length; i++) {
+      const count = await Group.count({
+        where: {
+          status: label[i],
+        },
+      });
+      countStatus.push(count);
+    }
+    result = { ...result, countStatus: countStatus };
+    
+
+
+
+
 
     const sqlCountAdvisor =
       "SELECT t.firstname, t.lastname, t.tel, COALESCE(COUNT(a.id), 0) AS advisor_count, COALESCE(COUNT(b1.id), 0) AS board1_count, COALESCE(COUNT(b2.id), 0) AS board2_count FROM teachers t LEFT JOIN boards a ON t.id = a.teacherId AND a.role = 'advisor' LEFT JOIN boards b1 ON t.id = b1.teacherId AND b1.role = 'board1' LEFT JOIN boards b2 ON t.id = b2.teacherId AND b2.role = 'board2' GROUP BY t.id, t.firstname, t.lastname, t.tel; ";

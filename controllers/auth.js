@@ -87,7 +87,7 @@ exports.login = async (req, res, next) => {
           expiresIn: "5d",
         }
       );
-      console.log(token);
+      console.log("token in login = ", token);
       // res.cookie("token", token, {
       //   // httpOnly: true,
       //   maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -98,6 +98,7 @@ exports.login = async (req, res, next) => {
         .status(200)
         .cookie("token", token, {
           // httpOnly: true,
+          sameSite: "none",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .json({
@@ -156,8 +157,8 @@ exports.loginTch = async (req, res, next) => {
             return res
               .status(200)
               .cookie("token", token, {
-                httpOnly: true,
-                maxAge: 7 * 24 * 60 * 60 * 1000,
+                sameSite: "none",
+                maxAge: 5 * 24 * 60 * 60 * 1000,
               })
               .json({
                 token: token,
@@ -199,7 +200,8 @@ exports.loginTch = async (req, res, next) => {
       return res
         .status(200)
         .cookie("token", token, {
-          httpOnly: true,
+          // httpOnly: true,
+          sameSite: "none",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .json({
@@ -216,8 +218,10 @@ exports.loginTch = async (req, res, next) => {
     });
 };
 exports.check = async (req, res, next) => {
-  const token = req.cookies.token;
-  console.log(token);
+  console.log(req.headers);
+  const header = req.headers.authorization;
+  const token = header.split(" ")[1] ? header.split(" ")[1] : null;
+  // console.log("token",req.headers.authorization.split(" ")[1]);
   if (!token) {
     return res.status(401).json("Unauthorized : No token provided");
   }
@@ -257,13 +261,15 @@ exports.check = async (req, res, next) => {
 };
 
 exports.logout = async (req, res, nect) => {
-  res.clearCookie("token", { httpOnly: true });
+  // res.clearCookie("token", { httpOnly: true });
+  res.clearCookie("token");
   res.json({ message: "cookie cleared" });
 };
 
 exports.checkRole = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1];
     if (!token) {
       return res.status(401).json("Unauthorized : No token provided");
     }
