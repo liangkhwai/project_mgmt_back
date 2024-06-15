@@ -12,8 +12,8 @@ exports.getList = async (req, res, next) => {
 
 exports.upDate = async (req, res, next) => {
   try {
-    console.log("hello update");
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     console.log(token);
     const check = await checkToken(token);
     if (!check) {
@@ -48,8 +48,8 @@ exports.upDate = async (req, res, next) => {
 
 exports.inSert = async (req, res, next) => {
   try {
-    console.log("hi");
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       res.status(401).json("invalid token or unavalible token");
@@ -77,7 +77,8 @@ exports.inSert = async (req, res, next) => {
 
 exports.deLete = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       res.status(401).json("invalid token or unavalible token");

@@ -49,7 +49,8 @@ exports.request = async (req, res, next) => {
 };
 exports.getRequest = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       return res.status(401).json("invalid token or unavailable token");
@@ -109,7 +110,8 @@ exports.getRequestGroup = async (req, res, next) => {
 
 exports.setStatus = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       res.status(401).json("invalid token or unavalible token");

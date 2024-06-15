@@ -10,7 +10,8 @@ const Board = require("../models/board");
 // const Exam_requests_files = require("../models/exam_requests_files");
 exports.getList = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     console.log(token);
     const check = await checkToken(token);
     if (!check) {
@@ -44,7 +45,8 @@ exports.getListRandomAll = async (req, res, next) => {
 
 exports.inSert = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     console.log(token);
     const check = await checkToken(token);
     if (!check) {
@@ -80,7 +82,8 @@ exports.inSert = async (req, res, next) => {
 
 exports.deLete = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     const check = await checkToken(token);
     if (!check) {
       res.status(401).json("invalid token or unavalible token");
@@ -99,7 +102,8 @@ exports.deLete = async (req, res, next) => {
 exports.upDate = async (req, res, next) => {
   console.log("hi");
   try {
-    const token = req.cookies.token;
+    const header = req.headers.authorization;
+    const token = header.split(" ")[1] ? header.split(" ")[1] : null;
     console.log(token);
     const check = await checkToken(token);
     if (!check) {
