@@ -9,7 +9,7 @@ const sequelize = new Sequelize("project_mgmt", "root", "123456789", {
   //   },
   // },
   timezone: "+07:00",
-  logging: console.log,
+  logging: false,
   charset: "utf8mb4",
   collate: "utf8mb4_unicode_ci",
 });

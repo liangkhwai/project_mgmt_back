@@ -1,4 +1,13 @@
+// module
 const express = require("express");
+const path = require("path");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const fs = require("fs");
+const multer = require("multer");
+
+// route
 const researcher = require("./models/researcher");
 const group = require("./models/group");
 const teacher = require("./models/teacher");
@@ -12,6 +21,10 @@ const exam_requests = require("./models/exam_requests");
 const categorie_room = require("./models/categorie_room");
 const admin = require("./models/admin");
 const files = require("./models/files");
+const Exam_requests_files = require("./models/exam_requests_files");
+const Files = require("./models/files");
+
+// model
 require("./models/associations");
 const researcherRoutes = require("./routes/researcher");
 const categoriesRoutes = require("./routes/categories");
@@ -27,29 +40,18 @@ const resultRoute = require("./routes/exam_result");
 const thesisRoute = require("./routes/thesis");
 const dashboardRoute = require("./routes/dashboard");
 const sequelize = require("./db");
-const multer = require("multer");
-const path = require("path");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const fs = require("fs");
-const Files = require("./models/files");
-const Exam_requests_files = require("./models/exam_requests_files");
-const app = express();
+
 const corsOptions = {
   origin: "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: true,
-  // allowedHeaders: ['Content-Type', 'Authorization']
 };
-
+const app = express();
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser());
-app.use(
-  express.urlencoded({ extended: true, limit: "50mb", parameterLimit: 1000000 })
-);
-app.use(express.json({ limit: "50mb" }));
-app.use(express.text({ type: "text/*", limit: "50mb" }));
 
 app.patch("/cors", (req, res) => {
   res.header(
@@ -178,6 +180,7 @@ app.use("/dashboard", dashboardRoute);
 sequelize
   .sync({})
   .then((result) => {
+    console.log("Server Start.....");
     app.listen(8080);
   })
   .catch((err) => {
